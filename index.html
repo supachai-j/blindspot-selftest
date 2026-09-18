@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>แบบทดสอบ: คนตาบอดทางความคิด (Cognitive Blind Spot Self-Test)</title>
+<style>
+  :root{
+    --bg:#0f1115; --card:#171a21; --card2:#1f232c; --text:#e8eaed; --muted:#9aa1ab;
+    --accent:#5b8def; --good:#3fbf7f; --mid:#e0b23e; --bad:#e2574c; --border:#2a2f3a;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Sarabun",sans-serif;
+    background:var(--bg); color:var(--text); line-height:1.6;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px;}
+  header{text-align:center;margin-bottom:24px;}
+  header h1{font-size:1.5rem;margin-bottom:6px;}
+  header p{color:var(--muted);font-size:0.92rem;margin:4px 0;}
+  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;}
+  .btn{
+    display:inline-block;background:var(--accent);color:#fff;border:none;padding:12px 22px;
+    border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;
+  }
+  .btn.secondary{background:var(--card2);color:var(--text);border:1px solid var(--border);}
+  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn-row{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap;}
+  #progressBar{height:6px;background:var(--card2);border-radius:6px;overflow:hidden;margin-bottom:18px;}
+  #progressFill{height:100%;background:var(--accent);width:0%;transition:width .25s;}
+  .qcount{color:var(--muted);font-size:0.85rem;margin-bottom:8px;}
+  .qtext{font-size:1.08rem;margin-bottom:20px;}
+  .likert{display:flex;flex-direction:column;gap:8px;}
+  .likert label{
+    display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card2);
+    border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.15s;
+  }
+  .likert label:hover{border-color:var(--accent);}
+  .likert input{accent-color:var(--accent);width:18px;height:18px;}
+  .likert label.selected{border-color:var(--accent);background:#20283a;}
+  .domain-bar-wrap{margin-bottom:16px;}
+  .domain-bar-label{display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:4px;}
+  .domain-bar-bg{height:10px;background:var(--card2);border-radius:6px;overflow:hidden;}
+  .domain-bar-fill{height:100%;border-radius:6px;}
+  .domain-note{color:var(--muted);font-size:0.82rem;margin-top:4px;}
+  .overall{text-align:center;padding:18px 0;}
+  .overall .score{font-size:2.6rem;font-weight:700;}
+  .badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;margin-top:8px;}
+  .badge.risk{background:#3a2325;color:var(--bad);}
+  .badge.mid{background:#3a3323;color:var(--mid);}
+  .badge.good{background:#1f3a2c;color:var(--good);}
+  .badge.warn{background:#2a2a3a;color:#b39ddb;}
+  textarea{
+    width:100%;min-height:80px;background:var(--card2);border:1px solid var(--border);
+    border-radius:10px;color:var(--text);padding:12px;font-family:inherit;font-size:0.95rem;resize:vertical;
+  }
+  .reflect-q{font-weight:600;margin-top:16px;margin-bottom:6px;font-size:0.95rem;}
+  table{width:100%;border-collapse:collapse;font-size:0.85rem;}
+  th,td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:left;}
+  th{color:var(--muted);font-weight:500;}
+  footer{color:var(--muted);font-size:0.78rem;margin-top:30px;line-height:1.7;}
+  footer a{color:var(--accent);}
+  .hidden{display:none !important;}
+  .small{font-size:0.85rem;color:var(--muted);}
+  .disclaimer{background:#241f1a;border:1px solid #4a3a20;border-radius:10px;padding:12px 14px;font-size:0.83rem;color:#d8c39a;margin-bottom:18px;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🧠 คนตาบอดทางความคิด</h1>
+    <p>Cognitive Blind Spot Self-Test — เครื่องมือสะท้อนตัวเอง (self-reflection)</p>
+  </header>
+
+  <div class="disclaimer">
+    ⚠️ เครื่องมือนี้เป็น <b>self-reflection tool เพื่อการศึกษา</b> ได้แรงบันดาลใจจากงานวิจัยด้าน cognitive psychology
+    (Actively Open-Minded Thinking, Identity-Protective Cognition, Bias Blind Spot) แต่<b>ไม่ใช่แบบทดสอบจิตวิทยาที่ผ่านการ validate ทางสถิติ</b>
+    ผลลัพธ์ไม่ควรใช้วินิจฉัยหรือตัดสินใครแบบเบ็ดเสร็จ — ใช้เพื่อกระตุ้นการสะท้อนตัวเองเท่านั้น
+  </div>
+
+  <!-- INTRO -->
+  <div id="intro" class="card">
+    <p>แบบทดสอบนี้มี <b>20 ข้อ</b> (ใช้เวลา ~5 นาที) แบ่งเป็น 5 มิติ:</p>
+    <ul class="small">
+      <li><b>CB</b> — Confirmation Bias (เลือกรับเฉพาะข้อมูลที่ยืนยันความเชื่อเดิม)</li>
+      <li><b>IPC</b> — Identity-Protective Cognition (ปกป้องตัวตนมากกว่าหาความจริง)</li>
+      <li><b>AOT</b> — Actively Open-Minded Thinking (มองความเชื่อเป็นสมมติฐาน, หา disconfirming evidence)</li>
+      <li><b>BBS</b> — Bias Blind Spot (มองเห็น bias ของตัวเองได้แค่ไหน)</li>
+      <li><b>IH</b> — Intellectual Humility (ยอมรับผิด/ปรับความเชื่อได้ง่ายแค่ไหน)</li>
+    </ul>
+    <p class="small">ตอบตามความจริงที่สุด ไม่มีคำตอบถูก/ผิด — ผลลัพธ์เก็บไว้ในเบราว์เซอร์ของคุณเท่านั้น (ไม่ส่งขึ้นเซิร์ฟเวอร์ใดๆ)</p>
+    <div id="historyPreview"></div>
+    <div class="btn-row">
+      <button class="btn" onclick="startQuiz()">เริ่มทำแบบทดสอบ</button>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div id="quiz" class="card hidden">
+    <div id="progressBar"><div id="progressFill"></div></div>
+    <div class="qcount"></div>
+    <div class="qtext"></div>
+    <div class="likert" id="likertOptions"></div>
+    <div class="btn-row">
+      <button class="btn secondary" id="prevBtn" onclick="prevQ()">← ย้อนกลับ</button>
+      <button class="btn" id="nextBtn" onclick="nextQ()" disabled>ถัดไป →</button>
+    </div>
+  </div>
+
+  <!-- RESULTS -->
+  <div id="results" class="card hidden">
+    <div class="overall">
+      <div class="small">คะแนนรวม (1.0 - 5.0)</div>
+      <div class="score" id="overallScore">-</div>
+      <div id="overallBadge"></div>
+    </div>
+    <div id="domainBars"></div>
+    <hr style="border-color:var(--border);margin:20px 0;">
+    <div id="interpretation"></div>
+
+    <div style="margin-top:24px;">
+      <div class="reflect-q">📝 Steelman Test (ไม่ให้คะแนน — แค่สะท้อนตัวเอง)</div>
+      <p class="small">เลือกเรื่องที่คุณเชื่อมั่นที่สุดเรื่องหนึ่ง แล้วลองเขียนอธิบาย "ฝั่งตรงข้าม" ให้แข็งแรงที่สุดเท่าที่จะทำได้:</p>
+      <textarea id="steelman" placeholder="เขียนคำอธิบายฝั่งตรงข้ามที่แข็งแรงที่สุดที่คุณนึกออก..."></textarea>
+
+      <div class="reflect-q">🔄 Disconfirmation Search</div>
+      <p class="small">อะไรจะเป็นหลักฐานที่ทำให้คุณเปลี่ยนความเชื่อเรื่องนั้น?</p>
+      <textarea id="disconfirm" placeholder="ถ้าเจอสิ่งนี้ ฉันจะยอมเปลี่ยนใจ..."></textarea>
+      <div class="btn-row">
+        <button class="btn secondary" onclick="saveReflection()">บันทึกบันทึกสะท้อนตัวเอง</button>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;" id="historySection"></div>
+
+    <div class="btn-row">
+      <button class="btn secondary" onclick="restartQuiz()">ทำแบบทดสอบใหม่</button>
+      <button class="btn secondary" onclick="exportResult()">คัดลอกผลลัพธ์เป็นข้อความ</button>
+      <button class="btn secondary" onclick="clearHistory()">ล้างประวัติทั้งหมด</button>
+    </div>
+  </div>
+
+  <footer>
+    <b>อ้างอิงแนวคิด (ไม่ใช่แบบทดสอบที่ validate ตรงตามต้นฉบับ):</b><br>
+    Dunning, D. & Kruger, J. (1999). J. Pers. Soc. Psychol. — Bias blind spot / overconfidence in the unskilled.<br>
+    Kahan, D. et al. (2013–2017, Yale) — Identity-protective cognition & motivated numeracy.<br>
+    Stanovich, K. & Toplak, M. (2023). "Actively Open-Minded Thinking and Its Measurement", MDPI Journal of Intelligence.<br>
+    Pennycook, G. & Rand, D. (2022). "Accuracy prompts", Nature Communications.<br>
+    Tetlock, P. & Gardner, D. — Superforecasting / Good Judgment Project, "Ten Commandments for Aspiring Superforecasters".<br>
+    Cusimano, C. & Lombrozo, T. (2023). Cognition — "People recognize and condone their own morally motivated reasoning".<br><br>
+    สร้างโดย Neo (AI ผู้ช่วยของ TumEzZ) · ไม่มีการเก็บข้อมูลผู้ใช้บนเซิร์ฟเวอร์ · ข้อมูลอยู่ใน localStorage ของเบราว์เซอร์เท่านั้น
+  </footer>
+</div>
+
+<script>
+// ---------- Data ----------
+const DOMAINS = {
+  CB:  {name:"Confirmation Bias", desc:"เลือกรับเฉพาะข้อมูลที่ยืนยันความเชื่อเดิม"},
+  IPC: {name:"Identity-Protective Cognition", desc:"ปกป้องตัวตนมากกว่าหาความจริง"},
+  AOT: {name:"Actively Open-Minded Thinking", desc:"มองความเชื่อเป็นสมมติฐาน, หา disconfirming evidence"},
+  BBS: {name:"Bias Blind Spot", desc:"มองเห็น bias ของตัวเองได้แค่ไหน"},
+  IH:  {name:"Intellectual Humility", desc:"ยอมรับผิด / ปรับความเชื่อได้ง่ายแค่ไหน"}
+};
+
+// reverse:true => higher agreement = MORE biased => score = 6 - raw
+const QUESTIONS = [
+  {d:"CB", t:"เวลาหาข้อมูลเรื่องที่ผมเชื่ออยู่แล้ว ผมมักเลือกอ่านเฉพาะแหล่งที่เห็นด้วยกับผม", reverse:true},
+  {d:"CB", t:"ผมมักข้ามข่าว/บทความที่หัวข้อดูขัดกับความเชื่อของผม โดยไม่อ่านให้จบ", reverse:true},
+  {d:"CB", t:"ผมตั้งใจค้นหาแหล่งข้อมูลที่มีมุมมองต่างจากผมเป็นประจำ", reverse:false},
+  {d:"CB", t:"เวลาเจอข้อมูลที่ขัดกับความเชื่อเดิม ผมจะอ่านอย่างละเอียดก่อนตัดสิน", reverse:false},
+
+  {d:"IPC", t:"เมื่อมีคนวิจารณ์ความเห็นที่ผมยึดถือมานาน ผมรู้สึกเหมือนถูกโจมตีตัวตน มากกว่าได้รับข้อมูล", reverse:true},
+  {d:"IPC", t:"ผมมักตัดสินคุณภาพของข้อมูลจากว่า 'ใครเป็นคนพูด' (ฝ่ายเดียวกันหรือไม่) มากกว่าเนื้อหาจริง", reverse:true},
+  {d:"IPC", t:"ผมสามารถเปลี่ยนความเห็นในเรื่องที่เกี่ยวกับกลุ่ม/องค์กรที่ผมสังกัดได้ ถ้ามีหลักฐานที่ดีพอ", reverse:false},
+  {d:"IPC", t:"ผมแยกแยะระหว่าง 'ความเชื่อที่ผมมี' กับ 'ตัวตนของผม' ได้ชัดเจน", reverse:false},
+
+  {d:"AOT", t:"ก่อนสรุปเรื่องสำคัญ ผมมักถามตัวเองว่า 'อะไรจะพิสูจน์ว่าฉันคิดผิด' แล้วไปหาคำตอบจริงจัง", reverse:false},
+  {d:"AOT", t:"ผมมองความเชื่อของตัวเองเป็นสมมติฐานที่พร้อมทดสอบ ไม่ใช่ความจริงตายตัว", reverse:false},
+  {d:"AOT", t:"เมื่อตัดสินใจแล้ว ผมมักไม่กลับไปทบทวนอีก แม้จะมีข้อมูลใหม่เข้ามา", reverse:true},
+  {d:"AOT", t:"ผมฝึกอธิบายฝั่งตรงข้ามของประเด็นที่ผมเชื่อมั่น ให้แข็งแรงที่สุดเท่าที่จะทำได้ (steelman)", reverse:false},
+
+  {d:"BBS", t:"ผมมั่นใจว่าตัวเองมีอคติน้อยกว่าคนส่วนใหญ่รอบตัว", reverse:true},
+  {d:"BBS", t:"ผมนึกออกอย่างน้อย 1 เรื่องในช่วง 2-3 ปีที่ผ่านมา ที่ผมเปลี่ยนความเชื่อสำคัญเพราะเจอหลักฐาน/เหตุผลที่ดีกว่า", reverse:false},
+  {d:"BBS", t:"คนใกล้ตัวผม (เพื่อน/ทีมงาน) มีอย่างน้อยหนึ่งคนที่คิดต่างจากผมอย่างจริงจังในเรื่องสำคัญ", reverse:false},
+  {d:"BBS", t:"ผมมักคิดว่าคนที่เห็นต่างจากผม 'ไม่เข้าใจข้อมูลดีพอ' มากกว่าคิดว่าผมอาจพลาดอะไรไป", reverse:true},
+
+  {d:"IH", t:"ผมพูดคำว่า 'ผมไม่รู้' หรือ 'ผมอาจจะผิด' ได้อย่างสบายใจในที่ประชุม/สนทนา", reverse:false},
+  {d:"IH", t:"การยอมรับว่าตัวเองคิดผิดในที่สาธารณะเป็นเรื่องที่ผมพยายามหลีกเลี่ยง", reverse:true},
+  {d:"IH", t:"ผมปรับความเชื่อทีละน้อยตามหลักฐานใหม่ที่เข้ามาเรื่อยๆ แทนที่จะยึดจุดยืนเดิมจนกว่าจะมีหลักฐานท่วมท้น", reverse:false},
+  {d:"IH", t:"ผมรู้สึกสบายใจ ไม่ใช่อึดอัด เวลามีคนชี้ข้อผิดพลาดในความคิดของผม", reverse:false},
+];
+
+const LIKERT = [
+  {v:1, l:"ไม่เห็นด้วยอย่างยิ่ง"},
+  {v:2, l:"ไม่เห็นด้วย"},
+  {v:3, l:"เฉยๆ / ไม่แน่ใจ"},
+  {v:4, l:"เห็นด้วย"},
+  {v:5, l:"เห็นด้วยอย่างยิ่ง"},
+];
+
+const STORAGE_KEY = "blindspot_history_v1";
+
+// ---------- State ----------
+let current = 0;
+let answers = new Array(QUESTIONS.length).fill(null);
+
+// ---------- Navigation ----------
+function startQuiz(){
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('quiz').classList.remove('hidden');
+  current = 0;
+  answers = new Array(QUESTIONS.length).fill(null);
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = QUESTIONS[current];
+  document.querySelector('.qcount').textContent = `ข้อ ${current+1} / ${QUESTIONS.length} — มิติ: ${DOMAINS[q.d].name}`;
+  document.querySelector('.qtext').textContent = q.t;
+  document.getElementById('progressFill').style.width = `${(current/QUESTIONS.length)*100}%`;
+
+  const wrap = document.getElementById('likertOptions');
+  wrap.innerHTML = '';
+  LIKERT.forEach(opt=>{
+    const id = `opt_${opt.v}`;
+    const label = document.createElement('label');
+    label.innerHTML = `<input type="radio" name="likert" value="${opt.v}" id="${id}"> ${opt.l}`;
+    if(answers[current] === opt.v) label.classList.add('selected');
+    label.onclick = ()=>{
+      answers[current] = opt.v;
+      document.getElementById('nextBtn').disabled = false;
+      document.querySelectorAll('.likert label').forEach(l=>l.classList.remove('selected'));
+      label.classList.add('selected');
+    };
+    wrap.appendChild(label);
+  });
+
+  document.getElementById('prevBtn').style.visibility = current===0 ? 'hidden' : 'visible';
+  document.getElementById('nextBtn').disabled = answers[current] === null;
+  document.getElementById('nextBtn').textContent = current === QUESTIONS.length-1 ? 'ดูผลลัพธ์ →' : 'ถัดไป →';
+}
+
+function nextQ(){
+  if(answers[current] === null) return;
+  if(current === QUESTIONS.length-1){
+    showResults();
+  } else {
+    current++;
+    renderQuestion();
+  }
+}
+function prevQ(){
+  if(current===0) return;
+  current--;
+  renderQuestion();
+}
+
+// ---------- Scoring ----------
+function computeScores(){
+  const domainSums = {}; const domainCounts = {};
+  Object.keys(DOMAINS).forEach(d=>{domainSums[d]=0;domainCounts[d]=0;});
+  QUESTIONS.forEach((q,i)=>{
+    let raw = answers[i];
+    let score = q.reverse ? (6-raw) : raw;
+    domainSums[q.d]+=score;
+    domainCounts[q.d]+=1;
+  });
+  const domainScores = {};
+  Object.keys(DOMAINS).forEach(d=>{
+    domainScores[d] = domainSums[d]/domainCounts[d];
+  });
+  const overall = Object.values(domainScores).reduce((a,b)=>a+b,0)/Object.keys(domainScores).length;
+  return {domainScores, overall};
+}
+
+function scoreColor(v){
+  if(v < 2.5) return 'var(--bad)';
+  if(v < 3.5) return 'var(--mid)';
+  return 'var(--good)';
+}
+
+function showResults(){
+  document.getElementById('quiz').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+  const {domainScores, overall} = computeScores();
+
+  document.getElementById('overallScore').textContent = overall.toFixed(2);
+  document.getElementById('overallScore').style.color = scoreColor(overall);
+
+  const badgeEl = document.getElementById('overallBadge');
+  let badgeClass, badgeText;
+  if(overall >= 4.6){
+    badgeClass='warn'; badgeText='⚠️ คะแนนสูงมากทุกด้าน — ระวัง overconfidence (ดู Dunning-Kruger ด้านล่าง)';
+  } else if(overall >= 3.5){
+    badgeClass='good'; badgeText='✅ โซนดี — มี self-correction mechanism ทำงานสม่ำเสมอ';
+  } else if(overall >= 2.5){
+    badgeClass='mid'; badgeText='🟡 โซนกลาง — มี mechanism บ้าง แต่ยังไม่สม่ำเสมอ';
+  } else {
+    badgeClass='risk'; badgeText='🔴 โซนเสี่ยงสูง — สัญญาณ blind spot หลายจุด ควรเริ่มฝึกทันที';
+  }
+  badgeEl.innerHTML = `<span class="badge ${badgeClass}">${badgeText}</span>`;
+
+  const barsEl = document.getElementById('domainBars');
+  barsEl.innerHTML = '';
+  Object.keys(DOMAINS).forEach(d=>{
+    const val = domainScores[d];
+    const pct = (val/5)*100;
+    const div = document.createElement('div');
+    div.className = 'domain-bar-wrap';
+    div.innerHTML = `
+      <div class="domain-bar-label"><span>${d} — ${DOMAINS[d].name}</span><span>${val.toFixed(2)} / 5.0</span></div>
+      <div class="domain-bar-bg"><div class="domain-bar-fill" style="width:${pct}%;background:${scoreColor(val)}"></div></div>
+      <div class="domain-note">${DOMAINS[d].desc}</div>
+    `;
+    barsEl.appendChild(div);
+  });
+
+  document.getElementById('interpretation').innerHTML = buildInterpretation(domainScores, overall);
+
+  saveToHistory(domainScores, overall);
+  renderHistory();
+}
+
+function buildInterpretation(domainScores, overall){
+  const recs = {
+    CB: "ฝึก 'accuracy prompt': ก่อนเชื่อ/แชร์อะไร ถามตัวเองสั้นๆ ว่า 'นี่ถูกต้องจริงไหม' ไม่ใช่ 'นี่คือสิ่งที่ฉันอยากเชื่อไหม' (Pennycook & Rand, 2022)",
+    IPC: "แยก identity ออกจาก belief ก่อน — ความเชื่อเปลี่ยนได้โดยไม่กระทบว่าเราเป็นใคร (อ้างอิง Kahan, identity-protective cognition)",
+    AOT: "ฝึก disconfirmation search: ก่อนสรุปเรื่องสำคัญ ถามว่า 'อะไรจะพิสูจน์ว่าฉันผิด' แล้วไปหาจริง (Tetlock, Good Judgment Project)",
+    BBS: "ลองทำ 'premortem' ก่อนเริ่มโปรเจกต์ใหญ่ หรือถามคนใกล้ตัวว่าเขาเห็นจุดบอดอะไรในความคิดคุณบ้าง",
+    IH: "ฝึกพูด 'ผมอาจจะผิด' ให้เป็นนิสัย และปรับความเชื่อทีละน้อยตามหลักฐานใหม่ (thoughtful updating)"
+  };
+  let weakest = Object.keys(domainScores).reduce((a,b)=> domainScores[a]<domainScores[b]?a:b);
+  let html = `<p><b>มิติที่ควรโฟกัสก่อน:</b> ${weakest} — ${DOMAINS[weakest].name}</p>`;
+  html += `<p class="small">${recs[weakest]}</p>`;
+  if(overall >= 4.6){
+    html += `<p class="small" style="margin-top:14px;">⚠️ <b>คำเตือนสำคัญ:</b> คนที่มั่นใจ 100% ว่าตัวเองไม่มี blind spot มักเป็นสัญญาณอันตรายเสียเอง (Dunning-Kruger, 1999) — นิยามของการตาบอดทางความคิดคือ "มองไม่เห็นว่าตัวเองตาบอด" ลองให้คนใกล้ตัวประเมินคุณแทน หรือทำ steelman test ด้านล่างจริงจังดู</p>`;
+  }
+  return html;
+}
+
+// ---------- Reflection ----------
+function saveReflection(){
+  const steelman = document.getElementById('steelman').value.trim();
+  const disconfirm = document.getElementById('disconfirm').value.trim();
+  if(!steelman && !disconfirm){ alert('ยังไม่ได้เขียนอะไรเลยครับ'); return; }
+  const hist = getHistory();
+  if(hist.length>0){
+    hist[hist.length-1].reflection = {steelman, disconfirm};
+    setHistory(hist);
+  }
+  alert('บันทึกแล้วครับ 👍');
+}
+
+// ---------- History (localStorage) ----------
+function getHistory(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; }catch(e){ return []; }
+}
+function setHistory(h){ localStorage.setItem(STORAGE_KEY, JSON.stringify(h)); }
+
+function saveToHistory(domainScores, overall){
+  const hist = getHistory();
+  hist.push({
+    date: new Date().toISOString(),
+    overall: Number(overall.toFixed(2)),
+    domains: Object.fromEntries(Object.entries(domainScores).map(([k,v])=>[k, Number(v.toFixed(2))]))
+  });
+  setHistory(hist);
+}
+
+function renderHistory(){
+  const hist = getHistory();
+  const el = document.getElementById('historySection');
+  if(hist.length <= 1){ el.innerHTML=''; return; }
+  let rows = hist.slice().reverse().map(h=>{
+    const d = new Date(h.date);
+    return `<tr><td>${d.toLocaleDateString('th-TH')} ${d.toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})}</td>
+      <td>${h.overall}</td>
+      <td>${Object.entries(h.domains).map(([k,v])=>`${k}:${v}`).join(' · ')}</td></tr>`;
+  }).join('');
+  el.innerHTML = `<div class="reflect-q">📊 ประวัติการทำแบบทดสอบ (${hist.length} ครั้ง)</div>
+    <table><thead><tr><th>วันที่</th><th>รวม</th><th>รายมิติ</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function renderHistoryPreview(){
+  const hist = getHistory();
+  const el = document.getElementById('historyPreview');
+  if(hist.length===0){ el.innerHTML=''; return; }
+  const last = hist[hist.length-1];
+  const d = new Date(last.date);
+  el.innerHTML = `<p class="small">ครั้งล่าสุด: ${d.toLocaleDateString('th-TH')} — คะแนนรวม ${last.overall}/5.0 (ทำมาแล้ว ${hist.length} ครั้ง)</p>`;
+}
+
+function clearHistory(){
+  if(confirm('ล้างประวัติทั้งหมด? การกระทำนี้ย้อนกลับไม่ได้')){
+    localStorage.removeItem(STORAGE_KEY);
+    renderHistory();
+    renderHistoryPreview();
+    alert('ล้างประวัติแล้วครับ');
+  }
+}
+
+function restartQuiz(){
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
+  document.getElementById('steelman').value='';
+  document.getElementById('disconfirm').value='';
+  renderHistoryPreview();
+}
+
+function exportResult(){
+  const {domainScores, overall} = computeScores();
+  let text = `🧠 คนตาบอดทางความคิด — ผลการประเมิน (${new Date().toLocaleDateString('th-TH')})\n`;
+  text += `คะแนนรวม: ${overall.toFixed(2)} / 5.0\n\n`;
+  Object.keys(DOMAINS).forEach(d=>{
+    text += `${d} (${DOMAINS[d].name}): ${domainScores[d].toFixed(2)} / 5.0\n`;
+  });
+  text += `\nสร้างด้วย blindspot self-test (self-reflection tool, ไม่ใช่แบบทดสอบจิตวิทยาที่ validate)`;
+  navigator.clipboard.writeText(text).then(()=>{
+    alert('คัดลอกผลลัพธ์แล้วครับ — ไปวางที่ไหนก็ได้');
+  }).catch(()=>{
+    prompt('คัดลอกข้อความนี้ด้วยตนเอง:', text);
+  });
+}
+
+// init
+renderHistoryPreview();
+</script>
+</body>
+</html>
