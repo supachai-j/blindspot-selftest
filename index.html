@@ -66,6 +66,8 @@
   .btn-row .btn{flex:1 1 auto;}
   #progressBar{height:16px;background:var(--surface2);border:2px solid var(--line);border-radius:999px;overflow:hidden;margin-bottom:16px;}
   #progressFill{height:100%;background:var(--accent);width:0%;transition:width .3s ease;}
+  #progressBarPeer{height:16px;background:var(--surface2);border:2px solid var(--line);border-radius:999px;overflow:hidden;margin-bottom:16px;}
+  #peerProgressFill{height:100%;background:var(--pink);width:0%;transition:width .3s ease;}
   .qcount{
     display:inline-block;color:var(--ink);font-size:0.78rem;font-weight:800;margin-bottom:10px;
     background:var(--surface2);border:2px solid var(--line);border-radius:999px;padding:5px 12px;
@@ -160,6 +162,24 @@
   .about-card p{font-weight:400;text-align:left;}
   .about-card li{font-size:0.85rem;color:var(--muted);margin-bottom:4px;}
   #confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:9999;}
+  /* Trend insight */
+  .trend-card{background:var(--surface2);border:2px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:8px;}
+  .trend-row{display:flex;justify-content:space-between;align-items:center;font-size:0.85rem;padding:4px 0;}
+  .trend-delta{font-weight:800;padding:2px 8px;border-radius:999px;font-size:0.78rem;}
+  .trend-delta.up{background:var(--good);color:#0B0B10;}
+  .trend-delta.down{background:var(--bad);color:#fff;}
+  .trend-delta.flat{background:var(--surface2);color:var(--muted);border:1px solid var(--line);}
+  /* Peer comparison */
+  .compare-wrap{margin-bottom:14px;}
+  .compare-label{display:flex;justify-content:space-between;font-size:0.85rem;font-weight:700;margin-bottom:4px;}
+  .compare-row{display:flex;align-items:center;gap:8px;margin-bottom:3px;}
+  .compare-tag{font-size:0.7rem;font-weight:800;width:34px;flex-shrink:0;}
+  .compare-bg{flex:1;height:12px;background:var(--surface2);border:2px solid var(--line);border-radius:999px;overflow:hidden;}
+  .compare-fill{height:100%;border-radius:999px;}
+  .compare-fill.self{background:var(--accent);}
+  .compare-fill.peer{background:var(--pink);}
+  .compare-val{font-size:0.72rem;color:var(--muted);width:32px;text-align:right;flex-shrink:0;}
+  .scaffold-text{background:var(--surface2);border:2px dashed var(--line);border-radius:12px;padding:10px 12px;font-size:0.82rem;color:var(--muted);margin-bottom:8px;font-family:'Noto Sans Thai',sans-serif;}
 </style>
 </head>
 <body>
@@ -211,6 +231,7 @@
       <div id="overallBadge"></div>
     </div>
     <div id="domainBars"></div>
+    <div id="trendSection" style="margin-top:16px;"></div>
     <hr style="border-color:var(--surface2);border-width:2px;margin:20px 0;">
     <div id="interpretation"></div>
 
@@ -218,12 +239,26 @@
     <div id="devPlanSection"></div>
 
     <div style="margin-top:24px;">
+      <div class="reflect-q" id="peerShareTitle"></div>
+      <p class="small" id="peerShareDesc"></p>
+      <div class="btn-row">
+        <button class="btn secondary" id="peerShareBtn" onclick="generatePeerLink()"></button>
+      </div>
+    </div>
+
+    <div style="margin-top:24px;">
       <div class="reflect-q" id="steelmanTitle"></div>
       <p class="small" id="steelmanDesc"></p>
+      <div class="btn-row" style="margin-top:0;margin-bottom:8px;">
+        <button class="btn secondary" id="steelmanScaffoldBtn" onclick="insertScaffold('steelman')" style="flex:0 1 auto;padding:9px 16px;font-size:0.82rem;min-height:36px;"></button>
+      </div>
       <textarea id="steelman"></textarea>
 
       <div class="reflect-q" id="disconfirmTitle"></div>
       <p class="small" id="disconfirmDesc"></p>
+      <div class="btn-row" style="margin-top:0;margin-bottom:8px;">
+        <button class="btn secondary" id="disconfirmScaffoldBtn" onclick="insertScaffold('disconfirm')" style="flex:0 1 auto;padding:9px 16px;font-size:0.82rem;min-height:36px;"></button>
+      </div>
       <textarea id="disconfirm"></textarea>
       <div class="btn-row">
         <button class="btn secondary" id="saveReflectionBtn" onclick="saveReflection()"></button>
@@ -236,6 +271,31 @@
       <button class="btn secondary" id="restartBtn" onclick="restartQuiz()"></button>
       <button class="btn secondary" id="exportBtn" onclick="exportResult()"></button>
       <button class="btn secondary" id="clearBtn" onclick="clearHistory()"></button>
+    </div>
+  </div>
+
+  <!-- PEER-RATING VIEW (activated via ?peer= URL param) -->
+  <div id="peerView" class="card hidden">
+    <div class="devplan-title" id="peerIntroTitle"></div>
+    <p class="small" id="peerIntroDesc"></p>
+    <div id="peerQuiz">
+      <div id="progressBarPeer"><div id="peerProgressFill"></div></div>
+      <div class="qcount" id="peerQcount"></div>
+      <div class="qtext" id="peerQtext"></div>
+      <div class="mood-grid" id="peerLikertOptions"></div>
+      <div class="btn-row">
+        <button class="btn secondary" id="peerPrevBtn" onclick="peerPrevQ()"></button>
+        <button class="btn" id="peerNextBtn" onclick="peerNextQ()" disabled></button>
+      </div>
+    </div>
+    <div id="peerResults" class="hidden">
+      <p class="small" id="peerOverallText" style="font-weight:700;font-size:0.95rem;"></p>
+      <div id="peerComparisonBars"></div>
+      <div class="disclaimer hidden" id="peerCallout" style="margin-top:14px;"></div>
+      <div class="btn-row">
+        <button class="btn secondary" id="peerCopyBtn" onclick="copyPeerResult()"></button>
+        <button class="btn secondary" id="peerExitBtn" onclick="exitPeerMode()"></button>
+      </div>
     </div>
   </div>
 
@@ -345,7 +405,29 @@ const STR = {
       </ul>
       <p><b>ความเป็นส่วนตัว:</b> ไม่มีการเก็บข้อมูลผู้ใช้บนเซิร์ฟเวอร์ใดๆ ผลลัพธ์และประวัติทั้งหมดอยู่ใน localStorage ของเบราว์เซอร์คุณเท่านั้น</p>
       <p class="small" style="margin-top:12px;">⚠️ นี่คือ self-reflection tool เพื่อการศึกษา ไม่ใช่แบบทดสอบจิตวิทยาที่ผ่านการ validate ทางสถิติ</p>`,
-    aboutCloseBtn: "ปิด"
+    aboutCloseBtn: "ปิด",
+    // ---- Phase 1 additions ----
+    trendTitle: "📈 แนวโน้ม (เทียบกับค่าเฉลี่ยครั้งก่อนๆ)",
+    trendNoData: "ทำแบบทดสอบอีกอย่างน้อย 1 ครั้งเพื่อดูแนวโน้ม",
+    trendUp: "ดีขึ้น",
+    trendDown: "ลดลง",
+    trendFlat: "คงที่",
+    scaffoldBtnLabel: "💡 ใช้ตัวช่วยเริ่มต้น",
+    steelmanScaffold: "คนที่เชื่อฝั่งตรงข้ามน่าจะกังวลเรื่อง _____ เพราะ _____\nถ้าฉันเป็นเขา ฉันน่าจะให้เหตุผลว่า _____",
+    disconfirmScaffold: "ถ้าฉันเจอหลักฐานที่แสดงว่า _____ ฉันจะเริ่มสงสัยความเชื่อนี้\nคนที่ฉันเคารพและคิดต่างจากฉัน อาจชี้ให้เห็นว่า _____",
+    peerShareTitle: "👥 ขอให้คนอื่นประเมินคุณ (Peer-Rating Lite)",
+    peerShareDesc: "Self-report มีข้อจำกัด — คนที่ blind spot สูงมักประเมินตัวเองแม่นน้อยกว่าคนอื่นมองเรา สร้างลิงก์นี้แล้วส่งให้เพื่อน/เพื่อนร่วมงานลองประเมินคุณดู (ไม่มีเซิร์ฟเวอร์เก็บข้อมูล ลิงก์เข้ารหัสคะแนนของคุณไว้ในตัว URL เอง)",
+    peerShareBtn: "🔗 สร้างลิงก์ให้คนอื่นประเมิน",
+    peerLinkCopied: "คัดลอกลิงก์แล้ว — ส่งให้เพื่อนเปิดได้เลย",
+    peerIntroTitle: "👥 คุณกำลังช่วยประเมินเพื่อน",
+    peerIntroDesc: "เพื่อนของคุณอยากรู้ว่าคนอื่นมองเขา/เธอยังไงในมิติเหล่านี้ ลองตอบคำถามต่อไปนี้โดยคิดถึง \"คนที่ส่งลิงก์นี้มาให้คุณ\" แทนตัวเอง (เช่น ถ้าคำถามเขียนว่า \"ผม...\" ให้แทนด้วยเพื่อนคนนั้น) คำตอบของคุณจะถูกเทียบกับที่เขาประเมินตัวเอง — ไม่มีการเก็บข้อมูลบนเซิร์ฟเวอร์",
+    peerOverallText: (peerScore, selfScore)=>`คุณให้คะแนนรวม ${peerScore}/5.0 · เขาให้ตัวเอง ${selfScore}/5.0`,
+    peerGapWarning: "🔍 ช่องว่างระหว่างมุมมอง (gap) มากกว่า 1.0 แต้มในบางมิติ — นี่อาจเป็นสัญญาณ blind spot ที่คุ้มค่าคุยกันตรงๆ",
+    peerCopyBtn: "คัดลอกผลเปรียบเทียบเพื่อส่งกลับ",
+    peerExitBtn: "ออกจากโหมดประเมิน",
+    peerResultCopied: "คัดลอกผลเปรียบเทียบแล้ว — ส่งกลับให้เพื่อนได้เลย",
+    peerSelfTag: "ตัวเอง",
+    peerRaterTag: "เพื่อน"
   },
   en: {
     pageTitle: "Self-Test: Cognitive Blind Spot",
@@ -421,7 +503,29 @@ const STR = {
       </ul>
       <p><b>Privacy:</b> No user data is collected on any server. All results and history live only in your browser's localStorage.</p>
       <p class="small" style="margin-top:12px;">⚠️ This is an educational self-reflection tool, not a statistically validated psychometric instrument.</p>`,
-    aboutCloseBtn: "Close"
+    aboutCloseBtn: "Close",
+    // ---- Phase 1 additions ----
+    trendTitle: "📈 Trend (vs. average of previous attempts)",
+    trendNoData: "Take the test at least once more to see your trend",
+    trendUp: "Improved",
+    trendDown: "Declined",
+    trendFlat: "Flat",
+    scaffoldBtnLabel: "💡 Use a starter scaffold",
+    steelmanScaffold: "Someone who believes the opposite is probably worried about _____ because _____\nIf I were them, I'd probably argue that _____",
+    disconfirmScaffold: "If I found evidence that _____, I'd start doubting this belief\nSomeone I respect who disagrees with me might point out that _____",
+    peerShareTitle: "👥 Ask someone else to rate you (Peer-Rating Lite)",
+    peerShareDesc: "Self-report has limits — people with higher blind spots tend to self-assess less accurately than others see them. Generate this link and send it to a friend/colleague to rate you (no server storage — your score is encoded directly in the URL).",
+    peerShareBtn: "🔗 Generate a peer-rating link",
+    peerLinkCopied: "Link copied — send it to your friend to open",
+    peerIntroTitle: "👥 You're helping rate a friend",
+    peerIntroDesc: "Your friend wants to know how others see them across these dimensions. Answer the following questions thinking of \"the person who sent you this link\" instead of yourself (e.g. if a question says \"I...\", substitute that friend). Your answers will be compared against their self-assessment — nothing is stored on any server.",
+    peerOverallText: (peerScore, selfScore)=>`You rated them ${peerScore}/5.0 · They rated themselves ${selfScore}/5.0`,
+    peerGapWarning: "🔍 A gap larger than 1.0 point in some dimensions — this could be a blind spot worth talking about directly.",
+    peerCopyBtn: "Copy comparison to send back",
+    peerExitBtn: "Exit rating mode",
+    peerResultCopied: "Comparison copied — send it back to your friend",
+    peerSelfTag: "Self",
+    peerRaterTag: "Friend"
   }
 };
 
@@ -543,12 +647,22 @@ function shuffleArray(arr){
 // Builds one randomized quiz attempt: QUESTIONS_PER_DOMAIN items sampled
 // (without replacement) from each domain's pool, then the whole set is
 // shuffled so the question order differs every attempt too.
-function buildQuizSet(){
+// If forceIndices is given ({CB:[i,i,i,i], IPC:[...], ...}), use those exact
+// bank indices instead of sampling randomly — used by peer-rating mode so a
+// rater answers the EXACT same items the original person answered.
+function buildQuizSet(forceIndices){
   let picked = [];
   Object.keys(QUESTION_BANK).forEach(d=>{
-    const pool = shuffleArray(QUESTION_BANK[d]);
-    pool.slice(0, QUESTIONS_PER_DOMAIN).forEach(q=>{
-      picked.push({d, t:q.t, reverse:q.reverse});
+    let indices;
+    if(forceIndices && forceIndices[d]){
+      indices = forceIndices[d];
+    } else {
+      const allIdx = QUESTION_BANK[d].map((_,i)=>i);
+      indices = shuffleArray(allIdx).slice(0, QUESTIONS_PER_DOMAIN);
+    }
+    indices.forEach(i=>{
+      const q = QUESTION_BANK[d][i];
+      picked.push({d, idx:i, t:q.t, reverse:q.reverse});
     });
   });
   return shuffleArray(picked);
@@ -569,6 +683,13 @@ const STORAGE_KEY = "blindspot_history_v1";
 let current = 0;
 let QUESTIONS = buildQuizSet(); // randomized on load; re-randomized on each startQuiz()
 let answers = new Array(QUESTIONS.length).fill(null);
+let priorHistorySnapshot = []; // history BEFORE the current attempt was saved (for trend display)
+
+// ---------- Peer-Rating Lite state ----------
+let peerSelfData = null;   // {domainScores, overall} decoded from the URL — the ORIGINAL person's self-scores
+let peerQuestions = [];    // exact same items (by bank index) the original person answered
+let peerCurrent = 0;
+let peerAnswers = [];
 
 // ================= Theme & Lang apply =================
 function applyTheme(){
@@ -615,6 +736,16 @@ function applyLang(){
   document.getElementById('aboutTitle').textContent = t('aboutTitle');
   document.getElementById('aboutBody').innerHTML = t('aboutBody');
   document.getElementById('aboutCloseBtn').textContent = t('aboutCloseBtn');
+  document.getElementById('peerShareTitle').textContent = t('peerShareTitle');
+  document.getElementById('peerShareDesc').textContent = t('peerShareDesc');
+  document.getElementById('peerShareBtn').textContent = t('peerShareBtn');
+  document.getElementById('steelmanScaffoldBtn').textContent = t('scaffoldBtnLabel');
+  document.getElementById('disconfirmScaffoldBtn').textContent = t('scaffoldBtnLabel');
+  document.getElementById('peerIntroTitle').textContent = t('peerIntroTitle');
+  document.getElementById('peerIntroDesc').textContent = t('peerIntroDesc');
+  document.getElementById('peerPrevBtn').textContent = t('prevBtn');
+  document.getElementById('peerCopyBtn').textContent = t('peerCopyBtn');
+  document.getElementById('peerExitBtn').textContent = t('peerExitBtn');
 
   localStorage.setItem(LANG_KEY, LANG);
 
@@ -623,6 +754,12 @@ function applyLang(){
     renderQuestion();
   } else if(!document.getElementById('results').classList.contains('hidden')){
     showResults(true);
+  } else if(!document.getElementById('peerView').classList.contains('hidden')){
+    if(!document.getElementById('peerResults').classList.contains('hidden')){
+      renderPeerResults(true);
+    } else {
+      renderPeerQuestion();
+    }
   } else {
     renderHistoryPreview();
   }
@@ -639,6 +776,7 @@ function startQuiz(){
   current = 0;
   QUESTIONS = buildQuizSet();
   answers = new Array(QUESTIONS.length).fill(null);
+  priorHistorySnapshot = getHistory(); // capture BEFORE this attempt gets appended
   renderQuestion();
 }
 
@@ -746,6 +884,7 @@ function showResults(skipSave){
 
   document.getElementById('interpretation').innerHTML = buildInterpretation(domainScores, overall);
   renderDevPlan(domainScores);
+  renderTrend(domainScores, overall, skipSave);
 
   if(!skipSave){
     saveToHistory(domainScores, overall);
@@ -795,7 +934,51 @@ function renderDevPlan(domainScores){
   document.getElementById('devPlanSection').innerHTML = html;
 }
 
+// Trend insight: compares this attempt's domain scores against the AVERAGE
+// of prior attempts (not just the single last attempt) so a one-off outlier
+// doesn't dominate the signal. Uses only data that's already collected —
+// no new tracking infrastructure needed.
+function renderTrend(domainScores, overall, isLangRerender){
+  const el = document.getElementById('trendSection');
+  // On a langauge-only re-render, use the same prior snapshot already captured.
+  // On a fresh completed attempt, prior snapshot was captured in startQuiz().
+  const priorAttempts = priorHistorySnapshot;
+  if(!priorAttempts || priorAttempts.length === 0){
+    el.innerHTML = `<p class="small">${t('trendNoData')}</p>`;
+    return;
+  }
+  const avgPrior = {};
+  Object.keys(DOMAINS).forEach(d=>{
+    const vals = priorAttempts.map(h=> h.domains && h.domains[d]).filter(v=> typeof v === 'number');
+    avgPrior[d] = vals.length ? vals.reduce((a,b)=>a+b,0)/vals.length : null;
+  });
+  let html = `<div class="trend-card"><div style="font-weight:800;font-size:0.9rem;margin-bottom:6px;">${t('trendTitle')}</div>`;
+  Object.keys(DOMAINS).forEach(d=>{
+    const prior = avgPrior[d];
+    const nowVal = domainScores[d];
+    if(prior === null){ return; }
+    const delta = nowVal - prior;
+    let cls = 'flat', label = t('trendFlat'), arrow = '→';
+    if(delta > 0.15){ cls='up'; label=t('trendUp'); arrow='↑'; }
+    else if(delta < -0.15){ cls='down'; label=t('trendDown'); arrow='↓'; }
+    html += `<div class="trend-row"><span>${d} — ${DOMAINS[d].name[LANG]}</span><span class="trend-delta ${cls}">${arrow} ${label} (${delta>=0?'+':''}${delta.toFixed(2)})</span></div>`;
+  });
+  html += `</div>`;
+  el.innerHTML = html;
+}
+
 // ---------- Reflection ----------
+function insertScaffold(fieldId){
+  const el = document.getElementById(fieldId);
+  const scaffoldText = fieldId === 'steelman' ? t('steelmanScaffold') : t('disconfirmScaffold');
+  if(el.value.trim().length === 0){
+    el.value = scaffoldText;
+  } else {
+    el.value = el.value + '\n' + scaffoldText;
+  }
+  el.focus();
+}
+
 function saveReflection(){
   const steelman = document.getElementById('steelman').value.trim();
   const disconfirm = document.getElementById('disconfirm').value.trim();
@@ -806,6 +989,178 @@ function saveReflection(){
     setHistory(hist);
   }
   toast(t('saveReflectionDone'));
+}
+
+// ---------- Peer-Rating Lite ----------
+// Encodes: exact bank indices used this attempt + this person's self scores
+// into a URL param. No backend — the payload lives entirely in the URL.
+function generatePeerLink(){
+  const {domainScores, overall} = computeScores();
+  const qi = {};
+  Object.keys(DOMAINS).forEach(d=> qi[d] = []);
+  QUESTIONS.forEach(q=> qi[q.d].push(q.idx));
+  const roundedScores = {};
+  Object.keys(domainScores).forEach(d=> roundedScores[d] = Number(domainScores[d].toFixed(2)));
+  const payload = {v:1, qi, self:{domainScores: roundedScores, overall: Number(overall.toFixed(2))}};
+  let encoded;
+  try{
+    encoded = btoa(JSON.stringify(payload));
+  }catch(e){
+    console.error('Failed to encode peer payload', e);
+    return;
+  }
+  const url = new URL(location.origin + location.pathname);
+  url.searchParams.set('peer', encoded);
+  const linkStr = url.toString();
+  navigator.clipboard.writeText(linkStr).then(()=>{
+    toast(t('peerLinkCopied'));
+  }).catch(()=>{
+    prompt(t('exportPromptLabel'), linkStr);
+  });
+}
+
+// Checks the URL for ?peer=... on load. If present and valid, switches the
+// whole page into peer-rating mode: the rater answers the SAME items
+// (by bank index) the original person answered, then sees a side-by-side
+// comparison. Returns true if peer mode was activated.
+function checkPeerMode(){
+  const params = new URLSearchParams(location.search);
+  const peerParam = params.get('peer');
+  if(!peerParam) return false;
+  let payload;
+  try{
+    payload = JSON.parse(atob(peerParam));
+    if(payload.v !== 1 || !payload.qi || !payload.self || !payload.self.domainScores) throw new Error('malformed payload');
+  }catch(e){
+    console.error('Invalid peer link', e);
+    return false;
+  }
+  peerSelfData = payload.self;
+  peerQuestions = buildQuizSet(payload.qi);
+  peerCurrent = 0;
+  peerAnswers = new Array(peerQuestions.length).fill(null);
+  document.getElementById('intro').classList.add('hidden');
+  document.getElementById('peerView').classList.remove('hidden');
+  document.getElementById('peerQuiz').classList.remove('hidden');
+  document.getElementById('peerResults').classList.add('hidden');
+  renderPeerQuestion();
+  return true;
+}
+
+function renderPeerQuestion(){
+  const q = peerQuestions[peerCurrent];
+  document.getElementById('peerQcount').textContent = t('qcount')(peerCurrent+1, peerQuestions.length, DOMAINS[q.d].name[LANG]);
+  document.getElementById('peerQtext').textContent = q.t[LANG];
+  document.getElementById('peerProgressFill').style.width = `${(peerCurrent/peerQuestions.length)*100}%`;
+
+  const wrap = document.getElementById('peerLikertOptions');
+  wrap.innerHTML = '';
+  LIKERT.forEach(opt=>{
+    const label = document.createElement('label');
+    label.className = 'mood-chip' + (peerAnswers[peerCurrent] === opt.v ? ' selected' : '');
+    label.innerHTML = `<input type="radio" class="sr-radio" name="peerLikert" value="${opt.v}"><span class="emoji">${LIKERT_EMOJI[opt.v]}</span><span>${opt.l[LANG]}</span>`;
+    label.onclick = ()=>{
+      peerAnswers[peerCurrent] = opt.v;
+      document.getElementById('peerNextBtn').disabled = false;
+      document.querySelectorAll('#peerLikertOptions .mood-chip').forEach(l=>l.classList.remove('selected'));
+      label.classList.add('selected');
+    };
+    wrap.appendChild(label);
+  });
+
+  document.getElementById('peerPrevBtn').style.visibility = peerCurrent===0 ? 'hidden' : 'visible';
+  document.getElementById('peerNextBtn').disabled = peerAnswers[peerCurrent] === null;
+  document.getElementById('peerNextBtn').textContent = peerCurrent === peerQuestions.length-1 ? t('resultBtn') : t('nextBtn');
+}
+
+function peerNextQ(){
+  if(peerAnswers[peerCurrent] === null) return;
+  if(peerCurrent === peerQuestions.length-1){
+    document.getElementById('peerQuiz').classList.add('hidden');
+    document.getElementById('peerResults').classList.remove('hidden');
+    renderPeerResults();
+  } else {
+    peerCurrent++;
+    renderPeerQuestion();
+  }
+}
+function peerPrevQ(){
+  if(peerCurrent===0) return;
+  peerCurrent--;
+  renderPeerQuestion();
+}
+
+function computePeerScores(){
+  const domainSums = {}; const domainCounts = {};
+  Object.keys(DOMAINS).forEach(d=>{domainSums[d]=0;domainCounts[d]=0;});
+  peerQuestions.forEach((q,i)=>{
+    let raw = peerAnswers[i];
+    let score = q.reverse ? (6-raw) : raw;
+    domainSums[q.d]+=score;
+    domainCounts[q.d]+=1;
+  });
+  const domainScores = {};
+  Object.keys(DOMAINS).forEach(d=>{ domainScores[d] = domainSums[d]/domainCounts[d]; });
+  const overall = Object.values(domainScores).reduce((a,b)=>a+b,0)/Object.keys(domainScores).length;
+  return {domainScores, overall};
+}
+
+let lastPeerComparison = null; // stashed for copyPeerResult()
+
+function renderPeerResults(skipRecompute){
+  const {domainScores, overall} = computePeerScores();
+  lastPeerComparison = {domainScores, overall};
+  document.getElementById('peerOverallText').textContent = t('peerOverallText')(overall.toFixed(2), peerSelfData.overall.toFixed(2));
+
+  const barsEl = document.getElementById('peerComparisonBars');
+  barsEl.innerHTML = '';
+  let maxGap = 0;
+  Object.keys(DOMAINS).forEach(d=>{
+    const selfVal = peerSelfData.domainScores[d] || 0;
+    const peerVal = domainScores[d] || 0;
+    const gap = Math.abs(selfVal - peerVal);
+    maxGap = Math.max(maxGap, gap);
+    const div = document.createElement('div');
+    div.className = 'compare-wrap';
+    div.innerHTML = `
+      <div class="compare-label"><span>${d} — ${DOMAINS[d].name[LANG]}</span><span>Δ ${gap.toFixed(2)}</span></div>
+      <div class="compare-row"><span class="compare-tag">${t('peerSelfTag')}</span><div class="compare-bg"><div class="compare-fill self" style="width:${(selfVal/5)*100}%"></div></div><span class="compare-val">${selfVal.toFixed(1)}</span></div>
+      <div class="compare-row"><span class="compare-tag">${t('peerRaterTag')}</span><div class="compare-bg"><div class="compare-fill peer" style="width:${(peerVal/5)*100}%"></div></div><span class="compare-val">${peerVal.toFixed(1)}</span></div>
+    `;
+    barsEl.appendChild(div);
+  });
+
+  const calloutEl = document.getElementById('peerCallout');
+  if(maxGap > 1.0){
+    calloutEl.textContent = t('peerGapWarning');
+    calloutEl.classList.remove('hidden');
+  } else {
+    calloutEl.classList.add('hidden');
+  }
+}
+
+function copyPeerResult(){
+  const data = lastPeerComparison || computePeerScores();
+  let text = `👥 Peer-Rating Comparison\n`;
+  text += t('peerOverallText')(data.overall.toFixed(2), peerSelfData.overall.toFixed(2)) + '\n\n';
+  Object.keys(DOMAINS).forEach(d=>{
+    const selfVal = peerSelfData.domainScores[d] || 0;
+    const peerVal = data.domainScores[d] || 0;
+    text += `${d}: self=${selfVal.toFixed(2)} peer=${peerVal.toFixed(2)}\n`;
+  });
+  navigator.clipboard.writeText(text).then(()=>{
+    toast(t('peerResultCopied'));
+  }).catch(()=>{
+    prompt(t('exportPromptLabel'), text);
+  });
+}
+
+function exitPeerMode(){
+  const url = new URL(location.href);
+  url.searchParams.delete('peer');
+  history.replaceState({}, '', url.toString());
+  document.getElementById('peerView').classList.add('hidden');
+  document.getElementById('intro').classList.remove('hidden');
 }
 
 // ---------- History (localStorage) ----------
@@ -995,6 +1350,7 @@ function launchConfetti(){
 // init
 applyTheme();
 applyLang();
+checkPeerMode(); // if URL has ?peer=..., this switches into peer-rating mode
 </script>
 </body>
 </html>
