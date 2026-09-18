@@ -143,6 +143,10 @@
   .devplan-links a{color:var(--pink);font-size:0.82rem;text-decoration:none;font-family:'Noto Sans Thai',sans-serif;}
   .devplan-links a:hover{text-decoration:underline;}
   .devplan-links .src-tag{color:var(--muted);font-size:0.72rem;}
+  .devplan-qa{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);}
+  .devplan-qa-item{font-size:0.8rem;margin-bottom:8px;display:flex;justify-content:space-between;gap:10px;align-items:flex-start;}
+  .devplan-qa-item .qtext-mini{color:var(--muted);flex:1;font-family:'Noto Sans Thai',sans-serif;line-height:1.4;}
+  .devplan-qa-item .ans-mini{font-weight:800;white-space:nowrap;font-size:0.75rem;background:var(--surface);border:2px solid var(--line);border-radius:999px;padding:2px 8px;}
   /* Toast */
   #toast{
     position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);
@@ -243,7 +247,13 @@
     <div id="interpretation"></div>
 
     <hr style="border-color:var(--surface2);border-width:2px;margin:20px 0;">
-    <div id="devPlanSection"></div>
+    <div id="devPlanTeaser">
+      <div class="devplan-title" id="devPlanTeaserTitle"></div>
+      <p class="small" id="devPlanTeaserDesc" style="margin-bottom:12px;"></p>
+      <div class="btn-row" style="margin-top:0;">
+        <button class="btn" id="devPlanViewBtn" onclick="openDevPlanDetail()"></button>
+      </div>
+    </div>
 
     <div style="margin-top:24px;">
       <div class="reflect-q" id="peerShareTitle"></div>
@@ -308,6 +318,20 @@
 
   <footer id="footerText"></footer>
 </div>
+
+<!-- DEV PLAN DETAIL VIEW (separate page, opened from results) -->
+<div id="devPlanView" class="card hidden">
+  <div class="btn-row" style="margin-top:0;margin-bottom:14px;">
+    <button class="btn secondary" id="devPlanBackBtn" onclick="closeDevPlanDetail()"></button>
+  </div>
+  <div class="devplan-title" id="devPlanDetailTitle"></div>
+  <p class="small" id="devPlanDetailIntro" style="margin-bottom:16px;"></p>
+  <div id="devPlanDetailSection"></div>
+  <div class="btn-row">
+    <button class="btn secondary" id="devPlanBackBtn2" onclick="closeDevPlanDetail()"></button>
+  </div>
+</div>
+
 
 <div id="toast" class="hidden"></div>
 <div id="confirmModal" class="modal-overlay hidden">
@@ -393,6 +417,11 @@ const STR = {
     overconfidenceWarning: `<p class="small" style="margin-top:14px;">⚠️ <b>คำเตือนสำคัญ:</b> คนที่มั่นใจ 100% ว่าตัวเองไม่มี blind spot มักเป็นสัญญาณอันตรายเสียเอง (Dunning-Kruger, 1999) — นิยามของการตาบอดทางความคิดคือ "มองไม่เห็นว่าตัวเองตาบอด" ลองให้คนใกล้ตัวประเมินคุณแทน หรือทำ steelman test ด้านล่างจริงจังดู</p>`,
     devPlanTitle: "📋 สรุปการประเมิน + แผนพัฒนารายมิติ",
     devPlanIntro: "เรียงจากมิติที่ควรโฟกัสก่อน (คะแนนต่ำสุด) ไปยังมิติที่แข็งแรงอยู่แล้ว พร้อมเนื้อหาที่แนะนำให้ไปอ่านต่อ",
+    devPlanTeaserTitle: "📋 แผนพัฒนารายมิติของคุณพร้อมแล้ว",
+    devPlanTeaserDesc: "ดูคำแนะนำเฉพาะแต่ละมิติ พร้อมคำตอบของคุณรายข้อ และเนื้อหาที่แนะนำให้อ่านต่อ",
+    devPlanViewBtn: "📖 ดูแผนพัฒนาแบบละเอียด →",
+    devPlanBackBtn: "← กลับไปหน้าผลลัพธ์",
+    qaTitle: "คำตอบของคุณในมิตินี้:",
     priorityTag: "โฟกัสก่อน",
     okTag: "แข็งแรงแล้ว",
     readMoreLabel: "อ่านต่อ:",
@@ -491,6 +520,11 @@ const STR = {
     overconfidenceWarning: `<p class="small" style="margin-top:14px;">⚠️ <b>Important warning:</b> being 100% confident you have no blind spots is itself a danger sign (Dunning-Kruger, 1999) — the definition of a cognitive blind spot is "not being able to see that you're blind." Try asking someone close to you to assess you instead, or take the steelman test below seriously.</p>`,
     devPlanTitle: "📋 Assessment Summary + Development Plan by Dimension",
     devPlanIntro: "Ordered from the dimension needing the most focus (lowest score) to the strongest one, with recommended further reading for each.",
+    devPlanTeaserTitle: "📋 Your dimension-by-dimension plan is ready",
+    devPlanTeaserDesc: "See tailored recommendations per dimension, your item-level answers, and suggested further reading.",
+    devPlanViewBtn: "📖 View detailed plan →",
+    devPlanBackBtn: "← Back to results",
+    qaTitle: "Your answers in this dimension:",
     priorityTag: "Focus first",
     okTag: "Already strong",
     readMoreLabel: "Read more:",
@@ -759,6 +793,13 @@ function applyLang(){
   // Re-render whichever view is currently active
   if(!document.getElementById('quiz').classList.contains('hidden')){
     renderQuestion();
+  } else if(!document.getElementById('devPlanView').classList.contains('hidden')){
+    document.getElementById('devPlanDetailTitle').textContent = t('devPlanTitle');
+    document.getElementById('devPlanDetailIntro').textContent = t('devPlanIntro');
+    document.getElementById('devPlanBackBtn').textContent = t('devPlanBackBtn');
+    document.getElementById('devPlanBackBtn2').textContent = t('devPlanBackBtn');
+    const {domainScores} = computeScores();
+    renderDevPlan(domainScores);
   } else if(!document.getElementById('results').classList.contains('hidden')){
     showResults(true);
   } else if(!document.getElementById('peerView').classList.contains('hidden')){
@@ -890,7 +931,9 @@ function showResults(skipSave){
   });
 
   document.getElementById('interpretation').innerHTML = buildInterpretation(domainScores, overall);
-  renderDevPlan(domainScores);
+  document.getElementById('devPlanTeaserTitle').textContent = t('devPlanTeaserTitle');
+  document.getElementById('devPlanTeaserDesc').textContent = t('devPlanTeaserDesc');
+  document.getElementById('devPlanViewBtn').textContent = t('devPlanViewBtn');
   renderTrend(domainScores, overall, skipSave);
 
   if(!skipSave){
@@ -913,8 +956,7 @@ function buildInterpretation(domainScores, overall){
 function renderDevPlan(domainScores){
   // Sort domains ascending by score = weakest (needs focus) first
   const sorted = Object.keys(domainScores).sort((a,b)=> domainScores[a]-domainScores[b]);
-  let html = `<div class="devplan-title">${t('devPlanTitle')}</div>`;
-  html += `<p class="small" style="margin-bottom:14px;">${t('devPlanIntro')}</p>`;
+  let html = '';
   sorted.forEach((d, idx)=>{
     const val = domainScores[d];
     const isPriority = idx === 0;
@@ -925,6 +967,16 @@ function renderDevPlan(domainScores){
     const links = (READING_LIST[d]||[]).map(r=>
       `<a href="${r.url}" target="_blank" rel="noopener noreferrer">${r.label} <span class="src-tag">(${r.src})</span></a>`
     ).join('');
+    // Item-level Q&A for this domain, drawn from the quiz just completed
+    const domainQAs = QUESTIONS
+      .map((q,i)=>({q, i}))
+      .filter(({q})=> q.d === d);
+    const qaHtml = domainQAs.map(({q,i})=>{
+      const raw = answers[i];
+      if(raw === null || raw === undefined) return '';
+      const label = LIKERT.find(o=>o.v===raw);
+      return `<div class="devplan-qa-item"><span class="qtext-mini">${q.t[LANG]}</span><span class="ans-mini">${LIKERT_EMOJI[raw]} ${label ? label.l[LANG] : raw}</span></div>`;
+    }).join('');
     html += `
       <div class="devplan-card ${isPriority?'priority':''}">
         <div class="devplan-head">
@@ -936,9 +988,28 @@ function renderDevPlan(domainScores){
           <div class="small" style="font-weight:700;">${t('readMoreLabel')}</div>
           ${links}
         </div>
+        ${qaHtml ? `<div class="devplan-qa"><div class="small" style="font-weight:700;margin-bottom:4px;">${t('qaTitle')}</div>${qaHtml}</div>` : ''}
       </div>`;
   });
-  document.getElementById('devPlanSection').innerHTML = html;
+  document.getElementById('devPlanDetailSection').innerHTML = html;
+}
+
+function openDevPlanDetail(){
+  const {domainScores} = computeScores();
+  document.getElementById('devPlanDetailTitle').textContent = t('devPlanTitle');
+  document.getElementById('devPlanDetailIntro').textContent = t('devPlanIntro');
+  document.getElementById('devPlanBackBtn').textContent = t('devPlanBackBtn');
+  document.getElementById('devPlanBackBtn2').textContent = t('devPlanBackBtn');
+  renderDevPlan(domainScores);
+  document.getElementById('results').classList.add('hidden');
+  document.getElementById('devPlanView').classList.remove('hidden');
+  window.scrollTo(0,0);
+}
+
+function closeDevPlanDetail(){
+  document.getElementById('devPlanView').classList.add('hidden');
+  document.getElementById('results').classList.remove('hidden');
+  window.scrollTo(0,0);
 }
 
 // Trend insight: compares this attempt's domain scores against the AVERAGE
