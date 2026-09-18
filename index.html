@@ -184,6 +184,7 @@
     <p id="introP1"></p>
     <ul class="small" id="introList"></ul>
     <p class="small" id="introP2"></p>
+    <p class="small" id="randomNote" style="font-weight:700;"></p>
     <div id="historyPreview"></div>
     <div class="btn-row">
       <button class="btn" id="startBtn" onclick="startQuiz()"></button>
@@ -285,6 +286,7 @@ const STR = {
       "<b>IH</b> — Intellectual Humility (ยอมรับผิด/ปรับความเชื่อได้ง่ายแค่ไหน)"
     ],
     introP2: "ตอบตามความจริงที่สุด ไม่มีคำตอบถูก/ผิด — ผลลัพธ์เก็บไว้ในเบราว์เซอร์ของคุณเท่านั้น (ไม่ส่งขึ้นเซิร์ฟเวอร์ใดๆ)",
+    randomNote: (bankSize)=>`🎲 คำถามสุ่มใหม่ทุกครั้งที่ทำแบบทดสอบ จากคลังคำถามทั้งหมด ${bankSize} ข้อ (สุ่ม 4 ข้อ/มิติ) — ทำซ้ำได้เรื่อยๆ โดยไม่เจอชุดเดิม`,
     startBtn: "เริ่มทำแบบทดสอบ 🚀",
     prevBtn: "← ย้อนกลับ",
     nextBtn: "ถัดไป →",
@@ -360,6 +362,7 @@ const STR = {
       "<b>IH</b> — Intellectual Humility (how easily you admit error / update beliefs)"
     ],
     introP2: "Answer as honestly as possible — there are no right or wrong answers. Results are stored only in your browser (never sent to any server).",
+    randomNote: (bankSize)=>`🎲 Questions are randomly reshuffled every time you take the test, drawn from a bank of ${bankSize} total questions (4 sampled per dimension) — retake it as many times as you like without seeing the exact same set.`,
     startBtn: "Start the Test 🚀",
     prevBtn: "← Back",
     nextBtn: "Next →",
@@ -470,32 +473,86 @@ const READING_LIST = {
 };
 
 // reverse:true => higher agreement = MORE biased => score = 6 - raw
-const QUESTIONS = [
-  {d:"CB", t:{th:"เวลาหาข้อมูลเรื่องที่ผมเชื่ออยู่แล้ว ผมมักเลือกอ่านเฉพาะแหล่งที่เห็นด้วยกับผม", en:"When researching something I already believe, I tend to only read sources that agree with me"}, reverse:true},
-  {d:"CB", t:{th:"ผมมักข้ามข่าว/บทความที่หัวข้อดูขัดกับความเชื่อของผม โดยไม่อ่านให้จบ", en:"I often skip news/articles that seem to contradict my beliefs without finishing them"}, reverse:true},
-  {d:"CB", t:{th:"ผมตั้งใจค้นหาแหล่งข้อมูลที่มีมุมมองต่างจากผมเป็นประจำ", en:"I deliberately seek out sources with viewpoints different from mine on a regular basis"}, reverse:false},
-  {d:"CB", t:{th:"เวลาเจอข้อมูลที่ขัดกับความเชื่อเดิม ผมจะอ่านอย่างละเอียดก่อนตัดสิน", en:"When I encounter info that contradicts my beliefs, I read it carefully before judging"}, reverse:false},
+// QUESTION_BANK: a larger pool per domain. Each quiz attempt randomly samples
+// QUESTIONS_PER_DOMAIN items per domain and shuffles the final order, so the
+// question set is different every time you take the test.
+const QUESTIONS_PER_DOMAIN = 4;
+const QUESTION_BANK = {
+  CB: [
+    {t:{th:"เวลาหาข้อมูลเรื่องที่ผมเชื่ออยู่แล้ว ผมมักเลือกอ่านเฉพาะแหล่งที่เห็นด้วยกับผม", en:"When researching something I already believe, I tend to only read sources that agree with me"}, reverse:true},
+    {t:{th:"ผมมักข้ามข่าว/บทความที่หัวข้อดูขัดกับความเชื่อของผม โดยไม่อ่านให้จบ", en:"I often skip news/articles that seem to contradict my beliefs without finishing them"}, reverse:true},
+    {t:{th:"ผมตั้งใจค้นหาแหล่งข้อมูลที่มีมุมมองต่างจากผมเป็นประจำ", en:"I deliberately seek out sources with viewpoints different from mine on a regular basis"}, reverse:false},
+    {t:{th:"เวลาเจอข้อมูลที่ขัดกับความเชื่อเดิม ผมจะอ่านอย่างละเอียดก่อนตัดสิน", en:"When I encounter info that contradicts my beliefs, I read it carefully before judging"}, reverse:false},
+    {t:{th:"ผมมักเชื่อพาดหัวข่าวทันทีถ้ามันตรงกับสิ่งที่ผมคิดอยู่แล้ว โดยไม่ตรวจสอบแหล่งที่มา", en:"I tend to believe a headline immediately if it matches what I already think, without checking the source"}, reverse:true},
+    {t:{th:"เวลาค้นหาข้อมูลใน Google ผมมักใช้คำค้นที่จะได้ผลลัพธ์ตรงกับความเชื่อของผม", en:"When searching online, I tend to use search terms that will return results matching my existing beliefs"}, reverse:true},
+    {t:{th:"ผมยินดีเปลี่ยนแหล่งข่าวที่ติดตามเป็นประจำ ถ้าพบว่ามันมักนำเสนอข้อมูลด้านเดียว", en:"I'm willing to switch away from a regular news source if I find it consistently one-sided"}, reverse:false},
+    {t:{th:"ก่อนสรุปว่าใครพูดถูก ผมจะลองหาข้อมูลจากอย่างน้อย 2 แหล่งที่มีมุมมองต่างกัน", en:"Before concluding who's right, I try to check at least two sources with differing viewpoints"}, reverse:false}
+  ],
+  IPC: [
+    {t:{th:"เมื่อมีคนวิจารณ์ความเห็นที่ผมยึดถือมานาน ผมรู้สึกเหมือนถูกโจมตีตัวตน มากกว่าได้รับข้อมูล", en:"When someone criticizes an opinion I've long held, it feels like a personal attack rather than receiving information"}, reverse:true},
+    {t:{th:"ผมมักตัดสินคุณภาพของข้อมูลจากว่า 'ใครเป็นคนพูด' (ฝ่ายเดียวกันหรือไม่) มากกว่าเนื้อหาจริง", en:"I tend to judge the quality of information by 'who said it' (whether they're on my side) more than the actual content"}, reverse:true},
+    {t:{th:"ผมสามารถเปลี่ยนความเห็นในเรื่องที่เกี่ยวกับกลุ่ม/องค์กรที่ผมสังกัดได้ ถ้ามีหลักฐานที่ดีพอ", en:"I can change my opinion about my own group/organization if there's good enough evidence"}, reverse:false},
+    {t:{th:"ผมแยกแยะระหว่าง 'ความเชื่อที่ผมมี' กับ 'ตัวตนของผม' ได้ชัดเจน", en:"I can clearly separate 'the beliefs I hold' from 'who I am'"}, reverse:false},
+    {t:{th:"ผมรู้สึกไม่สบายใจเมื่อข้อมูลใหม่บอกว่าคนที่ผมนับถือหรือทีมของผมอาจทำผิดพลาด", en:"I feel uncomfortable when new information suggests someone I respect or my own team may have made a mistake"}, reverse:true},
+    {t:{th:"ผมมักปกป้องจุดยืนของกลุ่ม/องค์กรที่ผมสังกัด แม้จะมีหลักฐานที่ขัดแย้ง", en:"I tend to defend my group's or organization's position even when there's contradicting evidence"}, reverse:true},
+    {t:{th:"ผมสามารถวิจารณ์ทีมหรือองค์กรของตัวเองต่อหน้าคนนอกได้ ถ้ามันสมควร", en:"I can criticize my own team or organization in front of outsiders when it's warranted"}, reverse:false},
+    {t:{th:"เวลาตัดสินข้อโต้แย้ง ผมพยายามเพิกเฉยว่าใครเป็นคนพูด แล้วโฟกัสที่เนื้อหาแทน", en:"When judging an argument, I try to ignore who said it and focus on the content instead"}, reverse:false}
+  ],
+  AOT: [
+    {t:{th:"ก่อนสรุปเรื่องสำคัญ ผมมักถามตัวเองว่า 'อะไรจะพิสูจน์ว่าฉันคิดผิด' แล้วไปหาคำตอบจริงจัง", en:"Before concluding on something important, I ask myself 'what would prove me wrong' and actually seek the answer"}, reverse:false},
+    {t:{th:"ผมมองความเชื่อของตัวเองเป็นสมมติฐานที่พร้อมทดสอบ ไม่ใช่ความจริงตายตัว", en:"I view my own beliefs as hypotheses to be tested, not fixed truths"}, reverse:false},
+    {t:{th:"เมื่อตัดสินใจแล้ว ผมมักไม่กลับไปทบทวนอีก แม้จะมีข้อมูลใหม่เข้ามา", en:"Once I've made a decision, I rarely revisit it even when new information comes in"}, reverse:true},
+    {t:{th:"ผมฝึกอธิบายฝั่งตรงข้ามของประเด็นที่ผมเชื่อมั่น ให้แข็งแรงที่สุดเท่าที่จะทำได้ (steelman)", en:"I practice explaining the opposing side of issues I feel strongly about as strongly as possible (steelmanning)"}, reverse:false},
+    {t:{th:"ผมชอบตั้งคำถามกับสมมติฐานของตัวเองเป็นประจำ แม้ในเรื่องที่ผมมั่นใจมาก", en:"I like to regularly question my own assumptions, even on things I'm very confident about"}, reverse:false},
+    {t:{th:"ผมมักตัดสินใจเรื่องสำคัญอย่างรวดเร็วโดยไม่รอฟังความเห็นที่ต่างออกไป", en:"I tend to make important decisions quickly without waiting to hear differing opinions"}, reverse:true},
+    {t:{th:"ผมสามารถเปลี่ยนจุดยืนกลางที่ประชุมได้ ถ้ามีคนเสนอเหตุผลที่ดีกว่า", en:"I can change my position in the middle of a meeting if someone presents a better argument"}, reverse:false},
+    {t:{th:"ผมรู้สึกว่าการยึดจุดยืนเดิมไว้ให้มั่นคงสำคัญกว่าการเปิดรับข้อมูลใหม่", en:"I feel that firmly sticking to my original position matters more than staying open to new information"}, reverse:true}
+  ],
+  BBS: [
+    {t:{th:"ผมมั่นใจว่าตัวเองมีอคติน้อยกว่าคนส่วนใหญ่รอบตัว", en:"I'm confident that I have less bias than most people around me"}, reverse:true},
+    {t:{th:"ผมนึกออกอย่างน้อย 1 เรื่องในช่วง 2-3 ปีที่ผ่านมา ที่ผมเปลี่ยนความเชื่อสำคัญเพราะเจอหลักฐาน/เหตุผลที่ดีกว่า", en:"I can recall at least one instance in the past 2-3 years where I changed an important belief because of better evidence/reasoning"}, reverse:false},
+    {t:{th:"คนใกล้ตัวผม (เพื่อน/ทีมงาน) มีอย่างน้อยหนึ่งคนที่คิดต่างจากผมอย่างจริงจังในเรื่องสำคัญ", en:"Among people close to me (friends/colleagues), at least one genuinely disagrees with me on important matters"}, reverse:false},
+    {t:{th:"ผมมักคิดว่าคนที่เห็นต่างจากผม 'ไม่เข้าใจข้อมูลดีพอ' มากกว่าคิดว่าผมอาจพลาดอะไรไป", en:"I tend to think people who disagree with me 'don't understand the info well enough' rather than considering I might be missing something"}, reverse:true},
+    {t:{th:"ผมเคยขอให้เพื่อนหรือเพื่อนร่วมงานช่วยชี้จุดบอดในความคิดของผมตรงๆ", en:"I've asked a friend or colleague to point out blind spots in my thinking directly"}, reverse:false},
+    {t:{th:"เวลาผมกับคนอื่นขัดแย้งกัน ผมมักคิดว่าตัวเองเป็นฝ่ายมีเหตุผลมากกว่าโดยอัตโนมัติ", en:"When I disagree with someone, I automatically tend to assume I'm the more reasonable one"}, reverse:true},
+    {t:{th:"ผมเชื่อว่าคนฉลาดหรือมีประสบการณ์มากก็ยังมี blind spot ได้เหมือนกัน รวมถึงตัวผมเอง", en:"I believe smart or experienced people can still have blind spots — including myself"}, reverse:false},
+    {t:{th:"ผมมักแปลกใจเมื่อมีคนชี้ให้เห็นอคติที่ผมไม่เคยรู้ตัวมาก่อน", en:"I'm often surprised when someone points out a bias I never noticed in myself"}, reverse:false}
+  ],
+  IH: [
+    {t:{th:"ผมพูดคำว่า 'ผมไม่รู้' หรือ 'ผมอาจจะผิด' ได้อย่างสบายใจในที่ประชุม/สนทนา", en:"I can comfortably say 'I don't know' or 'I might be wrong' in meetings/conversations"}, reverse:false},
+    {t:{th:"การยอมรับว่าตัวเองคิดผิดในที่สาธารณะเป็นเรื่องที่ผมพยายามหลีกเลี่ยง", en:"I try to avoid publicly admitting that I was wrong about something"}, reverse:true},
+    {t:{th:"ผมปรับความเชื่อทีละน้อยตามหลักฐานใหม่ที่เข้ามาเรื่อยๆ แทนที่จะยึดจุดยืนเดิมจนกว่าจะมีหลักฐานท่วมท้น", en:"I update my beliefs incrementally as new evidence arrives, rather than holding my position until overwhelmed by evidence"}, reverse:false},
+    {t:{th:"ผมรู้สึกสบายใจ ไม่ใช่อึดอัด เวลามีคนชี้ข้อผิดพลาดในความคิดของผม", en:"I feel comfortable, not defensive, when someone points out a flaw in my thinking"}, reverse:false},
+    {t:{th:"ผมสามารถพูดคำขอโทษเมื่อความเห็นของผมผิดพลาดได้โดยไม่รู้สึกเสียหน้า", en:"I can apologize when my opinion turns out to be wrong without feeling like I've lost face"}, reverse:false},
+    {t:{th:"ผมมักปกป้องความเห็นเดิมต่อไป แม้ในใจเริ่มไม่แน่ใจแล้วว่าถูกจริงไหม", en:"I tend to keep defending my original opinion even when I'm privately starting to doubt it"}, reverse:true},
+    {t:{th:"ผมมองว่าการเปลี่ยนใจเพราะเหตุผลที่ดีกว่า เป็นจุดแข็งไม่ใช่จุดอ่อน", en:"I see changing my mind for a better reason as a strength, not a weakness"}, reverse:false},
+    {t:{th:"ผมรู้สึกว่าต้องพิสูจน์ว่าตัวเองถูกอยู่เสมอ แม้ในเรื่องเล็กๆ น้อยๆ", en:"I feel like I must always prove I'm right, even about small things"}, reverse:true}
+  ]
+};
+const TOTAL_BANK_SIZE = Object.values(QUESTION_BANK).reduce((sum,arr)=>sum+arr.length, 0);
 
-  {d:"IPC", t:{th:"เมื่อมีคนวิจารณ์ความเห็นที่ผมยึดถือมานาน ผมรู้สึกเหมือนถูกโจมตีตัวตน มากกว่าได้รับข้อมูล", en:"When someone criticizes an opinion I've long held, it feels like a personal attack rather than receiving information"}, reverse:true},
-  {d:"IPC", t:{th:"ผมมักตัดสินคุณภาพของข้อมูลจากว่า 'ใครเป็นคนพูด' (ฝ่ายเดียวกันหรือไม่) มากกว่าเนื้อหาจริง", en:"I tend to judge the quality of information by 'who said it' (whether they're on my side) more than the actual content"}, reverse:true},
-  {d:"IPC", t:{th:"ผมสามารถเปลี่ยนความเห็นในเรื่องที่เกี่ยวกับกลุ่ม/องค์กรที่ผมสังกัดได้ ถ้ามีหลักฐานที่ดีพอ", en:"I can change my opinion about my own group/organization if there's good enough evidence"}, reverse:false},
-  {d:"IPC", t:{th:"ผมแยกแยะระหว่าง 'ความเชื่อที่ผมมี' กับ 'ตัวตนของผม' ได้ชัดเจน", en:"I can clearly separate 'the beliefs I hold' from 'who I am'"}, reverse:false},
+function shuffleArray(arr){
+  const a = arr.slice();
+  for(let i=a.length-1; i>0; i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
 
-  {d:"AOT", t:{th:"ก่อนสรุปเรื่องสำคัญ ผมมักถามตัวเองว่า 'อะไรจะพิสูจน์ว่าฉันคิดผิด' แล้วไปหาคำตอบจริงจัง", en:"Before concluding on something important, I ask myself 'what would prove me wrong' and actually seek the answer"}, reverse:false},
-  {d:"AOT", t:{th:"ผมมองความเชื่อของตัวเองเป็นสมมติฐานที่พร้อมทดสอบ ไม่ใช่ความจริงตายตัว", en:"I view my own beliefs as hypotheses to be tested, not fixed truths"}, reverse:false},
-  {d:"AOT", t:{th:"เมื่อตัดสินใจแล้ว ผมมักไม่กลับไปทบทวนอีก แม้จะมีข้อมูลใหม่เข้ามา", en:"Once I've made a decision, I rarely revisit it even when new information comes in"}, reverse:true},
-  {d:"AOT", t:{th:"ผมฝึกอธิบายฝั่งตรงข้ามของประเด็นที่ผมเชื่อมั่น ให้แข็งแรงที่สุดเท่าที่จะทำได้ (steelman)", en:"I practice explaining the opposing side of issues I feel strongly about as strongly as possible (steelmanning)"}, reverse:false},
-
-  {d:"BBS", t:{th:"ผมมั่นใจว่าตัวเองมีอคติน้อยกว่าคนส่วนใหญ่รอบตัว", en:"I'm confident that I have less bias than most people around me"}, reverse:true},
-  {d:"BBS", t:{th:"ผมนึกออกอย่างน้อย 1 เรื่องในช่วง 2-3 ปีที่ผ่านมา ที่ผมเปลี่ยนความเชื่อสำคัญเพราะเจอหลักฐาน/เหตุผลที่ดีกว่า", en:"I can recall at least one instance in the past 2-3 years where I changed an important belief because of better evidence/reasoning"}, reverse:false},
-  {d:"BBS", t:{th:"คนใกล้ตัวผม (เพื่อน/ทีมงาน) มีอย่างน้อยหนึ่งคนที่คิดต่างจากผมอย่างจริงจังในเรื่องสำคัญ", en:"Among people close to me (friends/colleagues), at least one genuinely disagrees with me on important matters"}, reverse:false},
-  {d:"BBS", t:{th:"ผมมักคิดว่าคนที่เห็นต่างจากผม 'ไม่เข้าใจข้อมูลดีพอ' มากกว่าคิดว่าผมอาจพลาดอะไรไป", en:"I tend to think people who disagree with me 'don't understand the info well enough' rather than considering I might be missing something"}, reverse:true},
-
-  {d:"IH", t:{th:"ผมพูดคำว่า 'ผมไม่รู้' หรือ 'ผมอาจจะผิด' ได้อย่างสบายใจในที่ประชุม/สนทนา", en:"I can comfortably say 'I don't know' or 'I might be wrong' in meetings/conversations"}, reverse:false},
-  {d:"IH", t:{th:"การยอมรับว่าตัวเองคิดผิดในที่สาธารณะเป็นเรื่องที่ผมพยายามหลีกเลี่ยง", en:"I try to avoid publicly admitting that I was wrong about something"}, reverse:true},
-  {d:"IH", t:{th:"ผมปรับความเชื่อทีละน้อยตามหลักฐานใหม่ที่เข้ามาเรื่อยๆ แทนที่จะยึดจุดยืนเดิมจนกว่าจะมีหลักฐานท่วมท้น", en:"I update my beliefs incrementally as new evidence arrives, rather than holding my position until overwhelmed by evidence"}, reverse:false},
-  {d:"IH", t:{th:"ผมรู้สึกสบายใจ ไม่ใช่อึดอัด เวลามีคนชี้ข้อผิดพลาดในความคิดของผม", en:"I feel comfortable, not defensive, when someone points out a flaw in my thinking"}, reverse:false},
-];
+// Builds one randomized quiz attempt: QUESTIONS_PER_DOMAIN items sampled
+// (without replacement) from each domain's pool, then the whole set is
+// shuffled so the question order differs every attempt too.
+function buildQuizSet(){
+  let picked = [];
+  Object.keys(QUESTION_BANK).forEach(d=>{
+    const pool = shuffleArray(QUESTION_BANK[d]);
+    pool.slice(0, QUESTIONS_PER_DOMAIN).forEach(q=>{
+      picked.push({d, t:q.t, reverse:q.reverse});
+    });
+  });
+  return shuffleArray(picked);
+}
 
 const LIKERT = [
   {v:1, l:{th:"ไม่เห็นด้วยอย่างยิ่ง", en:"Strongly Disagree"}},
@@ -510,6 +567,7 @@ const STORAGE_KEY = "blindspot_history_v1";
 
 // ---------- State ----------
 let current = 0;
+let QUESTIONS = buildQuizSet(); // randomized on load; re-randomized on each startQuiz()
 let answers = new Array(QUESTIONS.length).fill(null);
 
 // ================= Theme & Lang apply =================
@@ -537,6 +595,7 @@ function applyLang(){
   document.getElementById('introP1').innerHTML = t('introP1');
   document.getElementById('introList').innerHTML = t('introList').map(li=>`<li>${li}</li>`).join('');
   document.getElementById('introP2').textContent = t('introP2');
+  document.getElementById('randomNote').textContent = t('randomNote')(TOTAL_BANK_SIZE);
   document.getElementById('startBtn').textContent = t('startBtn');
   document.getElementById('prevBtn').textContent = t('prevBtn');
   document.getElementById('scoreLabel').textContent = t('scoreLabel');
@@ -578,6 +637,7 @@ function startQuiz(){
   document.getElementById('intro').classList.add('hidden');
   document.getElementById('quiz').classList.remove('hidden');
   current = 0;
+  QUESTIONS = buildQuizSet();
   answers = new Array(QUESTIONS.length).fill(null);
   renderQuestion();
 }
