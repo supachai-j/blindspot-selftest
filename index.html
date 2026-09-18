@@ -4,102 +4,168 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title id="pageTitle">แบบทดสอบ: คนตาบอดทางความคิด (Cognitive Blind Spot Self-Test)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700;800&family=Noto+Sans+Thai:wght@400;600;800&display=swap" rel="stylesheet">
 <style>
   :root{
-    --bg:#0f1115; --card:#171a21; --card2:#1f232c; --text:#e8eaed; --muted:#9aa1ab;
-    --accent:#5b8def; --good:#3fbf7f; --mid:#e0b23e; --bad:#e2574c; --border:#2a2f3a;
-    --disclaimer-bg:#241f1a; --disclaimer-border:#4a3a20; --disclaimer-text:#d8c39a;
+    --bg:#0B0B10; --surface:#15151C; --surface2:#1E1E28; --ink:#F5F4FF; --muted:#9B97B8;
+    --line:#F5F4FF; --shadow-color:#D4FF3D;
+    --accent:#D4FF3D; --accent-ink:#0B0B10;
+    --pink:#FF3D80; --good:#3DFFC1; --mid:#FFD23D; --bad:#FF4D6D;
+    --disclaimer-bg:#241f1a; --disclaimer-text:#e8d19a;
   }
   html[data-theme="light"]{
-    --bg:#f4f5f7; --card:#ffffff; --card2:#eef0f4; --text:#1c1e24; --muted:#5b616e;
-    --accent:#3766d6; --good:#1f9d5c; --mid:#b3830a; --bad:#c93a2f; --border:#dde1e8;
-    --disclaimer-bg:#fdf3e0; --disclaimer-border:#e8cf9a; --disclaimer-text:#7a5a17;
+    --bg:#F6F3E7; --surface:#FFFFFF; --surface2:#F1EEDD; --ink:#14121F; --muted:#5C5870;
+    --line:#14121F; --shadow-color:#14121F;
+    --accent:#A9D62A; --accent-ink:#0B0B10;
+    --pink:#E0245E; --good:#128A57; --mid:#B78600; --bad:#D93636;
+    --disclaimer-bg:#FCEFD3; --disclaimer-text:#6B4E10;
   }
   *{box-sizing:border-box;}
   body{
-    margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Sarabun",sans-serif;
-    background:var(--bg); color:var(--text); line-height:1.6; transition:background .2s, color .2s;
+    margin:0; font-family:'Space Grotesk','Noto Sans Thai',-apple-system,BlinkMacSystemFont,sans-serif;
+    background:var(--bg); color:var(--ink); line-height:1.6; transition:background .2s, color .2s;
+    -webkit-font-smoothing:antialiased;
   }
-  .wrap{max-width:720px;margin:0 auto;padding:24px 18px 60px;}
-  .topbar{display:flex;justify-content:flex-end;gap:8px;margin-bottom:10px;}
+  .wrap{max-width:720px;margin:0 auto;padding:20px 16px 60px;}
+  .topbar{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+  .toggles{display:flex;gap:8px;}
   .toggle-btn{
-    background:var(--card2);border:1px solid var(--border);color:var(--text);
-    padding:7px 12px;border-radius:8px;font-size:0.85rem;cursor:pointer;font-weight:600;
+    background:var(--surface2);border:2px solid var(--line);color:var(--ink);
+    padding:9px 14px;border-radius:999px;font-size:0.82rem;cursor:pointer;font-weight:800;
+    box-shadow:3px 3px 0 var(--shadow-color);transition:transform .12s ease, box-shadow .12s ease;
+    min-height:40px;font-family:inherit;
   }
-  .toggle-btn:hover{border-color:var(--accent);}
-  header{text-align:center;margin-bottom:24px;}
-  header h1{font-size:1.5rem;margin-bottom:6px;}
-  header p{color:var(--muted);font-size:0.92rem;margin:4px 0;}
-  .card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:18px;}
+  .toggle-btn:hover{transform:translate(-1px,-1px);box-shadow:4px 4px 0 var(--shadow-color);}
+  .toggle-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--shadow-color);}
+  .eyebrow{
+    display:inline-block;background:var(--pink);color:#fff;font-weight:800;font-size:0.7rem;
+    letter-spacing:.06em;padding:5px 12px;border-radius:999px;border:2px solid var(--line);margin-bottom:10px;
+  }
+  header{text-align:center;margin-bottom:22px;}
+  header h1{font-size:1.9rem;margin:0 0 8px;font-weight:800;letter-spacing:-.01em;}
+  header p{color:var(--muted);font-size:0.95rem;margin:4px 0;font-family:'Noto Sans Thai',sans-serif;font-weight:400;}
+  .card{
+    background:var(--surface);border:3px solid var(--line);border-radius:22px;padding:22px;
+    margin-bottom:20px;box-shadow:6px 6px 0 var(--shadow-color);
+  }
   .btn{
-    display:inline-block;background:var(--accent);color:#fff;border:none;padding:12px 22px;
-    border-radius:10px;font-size:1rem;cursor:pointer;font-weight:600;
+    display:inline-flex;align-items:center;justify-content:center;gap:6px;
+    background:var(--accent);color:var(--accent-ink);border:3px solid var(--line);
+    padding:13px 24px;border-radius:999px;font-size:1rem;cursor:pointer;font-weight:800;
+    box-shadow:5px 5px 0 var(--shadow-color);transition:transform .12s ease, box-shadow .12s ease;
+    font-family:inherit;min-height:48px;
   }
-  .btn.secondary{background:var(--card2);color:var(--text);border:1px solid var(--border);}
-  .btn:disabled{opacity:0.4;cursor:not-allowed;}
+  .btn:hover{transform:translate(-2px,-2px);box-shadow:7px 7px 0 var(--shadow-color);}
+  .btn:active{transform:translate(3px,3px);box-shadow:1px 1px 0 var(--shadow-color);}
+  .btn.secondary{background:var(--surface2);color:var(--ink);}
+  .btn.danger{background:var(--bad);color:#fff;}
+  .btn:disabled{opacity:0.35;cursor:not-allowed;box-shadow:3px 3px 0 var(--shadow-color);transform:none;}
   .btn-row{display:flex;gap:10px;justify-content:space-between;margin-top:18px;flex-wrap:wrap;}
-  #progressBar{height:6px;background:var(--card2);border-radius:6px;overflow:hidden;margin-bottom:18px;}
-  #progressFill{height:100%;background:var(--accent);width:0%;transition:width .25s;}
-  .qcount{color:var(--muted);font-size:0.85rem;margin-bottom:8px;}
-  .qtext{font-size:1.08rem;margin-bottom:20px;}
-  .likert{display:flex;flex-direction:column;gap:8px;}
-  .likert label{
-    display:flex;align-items:center;gap:12px;padding:12px 14px;background:var(--card2);
-    border:1px solid var(--border);border-radius:10px;cursor:pointer;transition:.15s;
+  .btn-row .btn{flex:1 1 auto;}
+  #progressBar{height:16px;background:var(--surface2);border:2px solid var(--line);border-radius:999px;overflow:hidden;margin-bottom:16px;}
+  #progressFill{height:100%;background:var(--accent);width:0%;transition:width .3s ease;}
+  .qcount{
+    display:inline-block;color:var(--ink);font-size:0.78rem;font-weight:800;margin-bottom:10px;
+    background:var(--surface2);border:2px solid var(--line);border-radius:999px;padding:5px 12px;
   }
-  .likert label:hover{border-color:var(--accent);}
-  .likert input{accent-color:var(--accent);width:18px;height:18px;}
-  .likert label.selected{border-color:var(--accent);}
-  html[data-theme="dark"] .likert label.selected{background:#20283a;}
-  html[data-theme="light"] .likert label.selected{background:#e7edfb;}
+  .qtext{font-size:1.15rem;margin-bottom:20px;font-weight:600;font-family:'Noto Sans Thai',sans-serif;}
+  .mood-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;}
+  .mood-chip{
+    display:flex;flex-direction:column;align-items:center;gap:6px;
+    padding:16px 8px;background:var(--surface2);border:3px solid var(--line);border-radius:16px;
+    cursor:pointer;box-shadow:4px 4px 0 var(--shadow-color);transition:transform .12s ease, box-shadow .12s ease;
+    text-align:center;font-weight:700;font-size:0.82rem;min-height:48px;font-family:'Noto Sans Thai',sans-serif;
+  }
+  .mood-chip .emoji{font-size:1.9rem;font-family:initial;}
+  .mood-chip:hover{transform:translate(-2px,-2px);box-shadow:6px 6px 0 var(--shadow-color);}
+  .mood-chip.selected{background:var(--accent);color:var(--accent-ink);transform:translate(2px,2px);box-shadow:2px 2px 0 var(--shadow-color);}
+  .sr-radio{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;}
   .domain-bar-wrap{margin-bottom:16px;}
-  .domain-bar-label{display:flex;justify-content:space-between;font-size:0.9rem;margin-bottom:4px;}
-  .domain-bar-bg{height:10px;background:var(--card2);border-radius:6px;overflow:hidden;}
-  .domain-bar-fill{height:100%;border-radius:6px;}
-  .domain-note{color:var(--muted);font-size:0.82rem;margin-top:4px;}
-  .overall{text-align:center;padding:18px 0;}
-  .overall .score{font-size:2.6rem;font-weight:700;}
-  .badge{display:inline-block;padding:6px 14px;border-radius:20px;font-size:0.85rem;font-weight:600;margin-top:8px;}
-  .badge.risk{background:#3a2325;color:var(--bad);}
-  .badge.mid{background:#3a3323;color:var(--mid);}
-  .badge.good{background:#1f3a2c;color:var(--good);}
-  .badge.warn{background:#2a2a3a;color:#b39ddb;}
-  html[data-theme="light"] .badge.risk{background:#fbe4e1;}
-  html[data-theme="light"] .badge.mid{background:#faf0d6;}
-  html[data-theme="light"] .badge.good{background:#dff3e6;}
-  html[data-theme="light"] .badge.warn{background:#ece7fb;}
-  textarea{
-    width:100%;min-height:80px;background:var(--card2);border:1px solid var(--border);
-    border-radius:10px;color:var(--text);padding:12px;font-family:inherit;font-size:0.95rem;resize:vertical;
+  .domain-bar-label{display:flex;justify-content:space-between;font-size:0.88rem;margin-bottom:5px;font-weight:700;}
+  .domain-bar-bg{height:16px;background:var(--surface2);border:2px solid var(--line);border-radius:999px;overflow:hidden;}
+  .domain-bar-fill{height:100%;border-radius:999px;}
+  .domain-note{color:var(--muted);font-size:0.82rem;margin-top:4px;font-family:'Noto Sans Thai',sans-serif;}
+  .overall{text-align:center;padding:14px 0 6px;}
+  .score-ring{
+    display:inline-flex;align-items:center;justify-content:center;width:140px;height:140px;
+    border-radius:50%;background:var(--surface2);border:4px solid var(--line);
+    box-shadow:6px 6px 0 var(--shadow-color);margin:12px 0;
   }
-  .reflect-q{font-weight:600;margin-top:16px;margin-bottom:6px;font-size:0.95rem;}
+  .overall .score{font-size:2.4rem;font-weight:800;}
+  .badge{
+    display:inline-block;padding:8px 16px;border-radius:999px;font-size:0.85rem;font-weight:800;
+    margin-top:6px;border:2px solid var(--line);
+  }
+  .badge.risk{background:var(--bad);color:#fff;}
+  .badge.mid{background:var(--mid);color:#14121F;}
+  .badge.good{background:var(--good);color:#0B0B10;}
+  .badge.warn{background:var(--pink);color:#fff;}
+  @media (prefers-reduced-motion: no-preference){
+    @keyframes popIn{0%{transform:scale(.6);opacity:0;}70%{transform:scale(1.08);}100%{transform:scale(1);opacity:1;}}
+    .badge{animation:popIn .4s ease both;}
+  }
+  textarea{
+    width:100%;min-height:80px;background:var(--surface2);border:2px solid var(--line);
+    border-radius:14px;color:var(--ink);padding:12px;font-family:'Noto Sans Thai',sans-serif;font-size:0.95rem;resize:vertical;
+  }
+  .reflect-q{font-weight:800;margin-top:18px;margin-bottom:6px;font-size:1rem;}
   table{width:100%;border-collapse:collapse;font-size:0.85rem;}
-  th,td{padding:8px 6px;border-bottom:1px solid var(--border);text-align:left;}
-  th{color:var(--muted);font-weight:500;}
-  footer{color:var(--muted);font-size:0.78rem;margin-top:30px;line-height:1.7;}
-  footer a{color:var(--accent);}
+  th,td{padding:8px 6px;border-bottom:2px solid var(--surface2);text-align:left;}
+  th{color:var(--muted);font-weight:700;}
+  footer{color:var(--muted);font-size:0.76rem;margin-top:30px;line-height:1.7;font-family:'Noto Sans Thai',sans-serif;}
+  footer a{color:var(--pink);}
   .hidden{display:none !important;}
-  .small{font-size:0.85rem;color:var(--muted);}
-  .disclaimer{background:var(--disclaimer-bg);border:1px solid var(--disclaimer-border);border-radius:10px;padding:12px 14px;font-size:0.83rem;color:var(--disclaimer-text);margin-bottom:18px;}
-  .devplan-title{font-size:1.05rem;font-weight:700;margin-bottom:12px;}
-  .devplan-card{background:var(--card2);border:1px solid var(--border);border-radius:12px;padding:14px 16px;margin-bottom:12px;}
-  .devplan-card.priority{border-color:var(--accent);}
+  .small{font-size:0.85rem;color:var(--muted);font-family:'Noto Sans Thai',sans-serif;}
+  .disclaimer{
+    background:var(--disclaimer-bg);border:2px solid var(--line);border-radius:16px;padding:14px 16px;
+    font-size:0.83rem;color:var(--disclaimer-text);margin-bottom:18px;font-family:'Noto Sans Thai',sans-serif;
+  }
+  .devplan-title{font-size:1.1rem;font-weight:800;margin-bottom:12px;}
+  .devplan-card{background:var(--surface2);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:3px 3px 0 var(--shadow-color);}
+  .devplan-card.priority{border-color:var(--pink);box-shadow:4px 4px 0 var(--pink);}
   .devplan-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:6px;}
   .devplan-head b{font-size:0.95rem;}
-  .devplan-tag{font-size:0.72rem;font-weight:700;padding:2px 8px;border-radius:10px;background:var(--accent);color:#fff;}
-  .devplan-tag.ok{background:var(--good);}
-  .devplan-action{font-size:0.87rem;margin:6px 0;}
+  .devplan-tag{font-size:0.72rem;font-weight:800;padding:3px 10px;border-radius:999px;background:var(--accent);color:var(--accent-ink);border:2px solid var(--line);}
+  .devplan-tag.ok{background:var(--good);color:#0B0B10;}
+  .devplan-action{font-size:0.87rem;margin:6px 0;font-family:'Noto Sans Thai',sans-serif;}
   .devplan-links{margin-top:8px;display:flex;flex-direction:column;gap:4px;}
-  .devplan-links a{color:var(--accent);font-size:0.82rem;text-decoration:none;}
+  .devplan-links a{color:var(--pink);font-size:0.82rem;text-decoration:none;font-family:'Noto Sans Thai',sans-serif;}
   .devplan-links a:hover{text-decoration:underline;}
   .devplan-links .src-tag{color:var(--muted);font-size:0.72rem;}
+  /* Toast */
+  #toast{
+    position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);
+    background:var(--ink);color:var(--bg);padding:14px 22px;border-radius:999px;
+    font-weight:800;font-size:0.9rem;border:2px solid var(--line);box-shadow:4px 4px 0 var(--shadow-color);
+    opacity:0;transition:opacity .25s ease, transform .25s ease;z-index:10000;max-width:90vw;text-align:center;
+    font-family:'Noto Sans Thai',sans-serif;
+  }
+  #toast.show{opacity:1;transform:translate(-50%,0);}
+  /* Confirm modal */
+  .modal-overlay{
+    position:fixed;inset:0;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;
+    z-index:10001;padding:20px;
+  }
+  .modal-card{
+    background:var(--surface);border:3px solid var(--line);border-radius:20px;padding:22px;
+    box-shadow:6px 6px 0 var(--shadow-color);max-width:360px;width:100%;text-align:center;
+  }
+  .modal-card p{font-size:0.95rem;margin-bottom:16px;font-family:'Noto Sans Thai',sans-serif;font-weight:600;}
+  .modal-actions{display:flex;gap:10px;}
+  .modal-actions .btn{flex:1;}
+  #confettiCanvas{position:fixed;inset:0;pointer-events:none;z-index:9999;}
 </style>
 </head>
 <body>
 <div class="wrap">
   <div class="topbar">
-    <button class="toggle-btn" id="langToggle" onclick="toggleLang()">EN</button>
-    <button class="toggle-btn" id="themeToggle" onclick="toggleTheme()">☀️</button>
+    <span class="eyebrow" id="eyebrowTag">🧪 SELF-CHECK</span>
+    <div class="toggles">
+      <button class="toggle-btn" id="langToggle" onclick="toggleLang()">EN</button>
+      <button class="toggle-btn" id="themeToggle" onclick="toggleTheme()">☀️</button>
+    </div>
   </div>
   <header>
     <h1 id="hTitle">🧠 คนตาบอดทางความคิด</h1>
@@ -124,7 +190,7 @@
     <div id="progressBar"><div id="progressFill"></div></div>
     <div class="qcount"></div>
     <div class="qtext"></div>
-    <div class="likert" id="likertOptions"></div>
+    <div class="mood-grid" id="likertOptions"></div>
     <div class="btn-row">
       <button class="btn secondary" id="prevBtn" onclick="prevQ()"></button>
       <button class="btn" id="nextBtn" onclick="nextQ()" disabled></button>
@@ -135,14 +201,14 @@
   <div id="results" class="card hidden">
     <div class="overall">
       <div class="small" id="scoreLabel"></div>
-      <div class="score" id="overallScore">-</div>
+      <div class="score-ring"><div class="score" id="overallScore">-</div></div>
       <div id="overallBadge"></div>
     </div>
     <div id="domainBars"></div>
-    <hr style="border-color:var(--border);margin:20px 0;">
+    <hr style="border-color:var(--surface2);border-width:2px;margin:20px 0;">
     <div id="interpretation"></div>
 
-    <hr style="border-color:var(--border);margin:20px 0;">
+    <hr style="border-color:var(--surface2);border-width:2px;margin:20px 0;">
     <div id="devPlanSection"></div>
 
     <div style="margin-top:24px;">
@@ -170,6 +236,18 @@
   <footer id="footerText"></footer>
 </div>
 
+<div id="toast" class="hidden"></div>
+<div id="confirmModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <p id="confirmModalText"></p>
+    <div class="modal-actions">
+      <button class="btn secondary" id="confirmCancelBtn"></button>
+      <button class="btn danger" id="confirmOkBtn"></button>
+    </div>
+  </div>
+</div>
+<canvas id="confettiCanvas" class="hidden"></canvas>
+
 <script>
 // ================= i18n & theme =================
 const LANG_KEY = "blindspot_lang_v1";
@@ -182,6 +260,7 @@ const STR = {
     pageTitle: "แบบทดสอบ: คนตาบอดทางความคิด (Cognitive Blind Spot Self-Test)",
     hTitle: "🧠 คนตาบอดทางความคิด",
     hSubtitle: "Cognitive Blind Spot Self-Test — เครื่องมือสะท้อนตัวเอง (self-reflection)",
+    eyebrowTag: "🧪 เช็คตัวเอง",
     disclaimer: "⚠️ เครื่องมือนี้เป็น <b>self-reflection tool เพื่อการศึกษา</b> ได้แรงบันดาลใจจากงานวิจัยด้าน cognitive psychology (Actively Open-Minded Thinking, Identity-Protective Cognition, Bias Blind Spot) แต่<b>ไม่ใช่แบบทดสอบจิตวิทยาที่ผ่านการ validate ทางสถิติ</b> ผลลัพธ์ไม่ควรใช้วินิจฉัยหรือตัดสินใครแบบเบ็ดเสร็จ — ใช้เพื่อกระตุ้นการสะท้อนตัวเองเท่านั้น",
     introP1: "แบบทดสอบนี้มี <b>20 ข้อ</b> (ใช้เวลา ~5 นาที) แบ่งเป็น 5 มิติ:",
     introList: [
@@ -192,7 +271,7 @@ const STR = {
       "<b>IH</b> — Intellectual Humility (ยอมรับผิด/ปรับความเชื่อได้ง่ายแค่ไหน)"
     ],
     introP2: "ตอบตามความจริงที่สุด ไม่มีคำตอบถูก/ผิด — ผลลัพธ์เก็บไว้ในเบราว์เซอร์ของคุณเท่านั้น (ไม่ส่งขึ้นเซิร์ฟเวอร์ใดๆ)",
-    startBtn: "เริ่มทำแบบทดสอบ",
+    startBtn: "เริ่มทำแบบทดสอบ 🚀",
     prevBtn: "← ย้อนกลับ",
     nextBtn: "ถัดไป →",
     resultBtn: "ดูผลลัพธ์ →",
@@ -240,12 +319,15 @@ const STR = {
     devPlanIntro: "เรียงจากมิติที่ควรโฟกัสก่อน (คะแนนต่ำสุด) ไปยังมิติที่แข็งแรงอยู่แล้ว พร้อมเนื้อหาที่แนะนำให้ไปอ่านต่อ",
     priorityTag: "โฟกัสก่อน",
     okTag: "แข็งแรงแล้ว",
-    readMoreLabel: "อ่านต่อ:"
+    readMoreLabel: "อ่านต่อ:",
+    modalYes: "ยืนยัน",
+    modalNo: "ยกเลิก"
   },
   en: {
     pageTitle: "Self-Test: Cognitive Blind Spot",
     hTitle: "🧠 Cognitive Blind Spot",
     hSubtitle: "Cognitive Blind Spot Self-Test — a self-reflection tool",
+    eyebrowTag: "🧪 SELF-CHECK",
     disclaimer: "⚠️ This is a <b>self-reflection tool for educational purposes</b>, inspired by cognitive psychology research (Actively Open-Minded Thinking, Identity-Protective Cognition, Bias Blind Spot) — <b>not a statistically validated psychometric instrument</b>. Results should not be used to diagnose or make final judgments about anyone. Use it to prompt self-reflection only.",
     introP1: "This test has <b>20 items</b> (~5 minutes), covering 5 dimensions:",
     introList: [
@@ -256,7 +338,7 @@ const STR = {
       "<b>IH</b> — Intellectual Humility (how easily you admit error / update beliefs)"
     ],
     introP2: "Answer as honestly as possible — there are no right or wrong answers. Results are stored only in your browser (never sent to any server).",
-    startBtn: "Start the Test",
+    startBtn: "Start the Test 🚀",
     prevBtn: "← Back",
     nextBtn: "Next →",
     resultBtn: "See Results →",
@@ -304,7 +386,9 @@ const STR = {
     devPlanIntro: "Ordered from the dimension needing the most focus (lowest score) to the strongest one, with recommended further reading for each.",
     priorityTag: "Focus first",
     okTag: "Already strong",
-    readMoreLabel: "Read more:"
+    readMoreLabel: "Read more:",
+    modalYes: "Confirm",
+    modalNo: "Cancel"
   }
 };
 
@@ -390,6 +474,7 @@ const LIKERT = [
   {v:4, l:{th:"เห็นด้วย", en:"Agree"}},
   {v:5, l:{th:"เห็นด้วยอย่างยิ่ง", en:"Strongly Agree"}},
 ];
+const LIKERT_EMOJI = {1:"😖", 2:"🙁", 3:"😐", 4:"🙂", 5:"🤩"};
 
 const STORAGE_KEY = "blindspot_history_v1";
 
@@ -415,6 +500,7 @@ function applyLang(){
   document.getElementById('langToggle').textContent = LANG === 'th' ? 'EN' : 'TH';
   document.getElementById('pageTitle').textContent = t('pageTitle');
   document.title = t('pageTitle');
+  document.getElementById('eyebrowTag').textContent = t('eyebrowTag');
   document.getElementById('hTitle').textContent = t('hTitle');
   document.getElementById('hSubtitle').textContent = t('hSubtitle');
   document.getElementById('disclaimerText').innerHTML = t('disclaimer');
@@ -435,6 +521,8 @@ function applyLang(){
   document.getElementById('exportBtn').textContent = t('exportBtn');
   document.getElementById('clearBtn').textContent = t('clearBtn');
   document.getElementById('footerText').innerHTML = t('footer');
+  document.getElementById('confirmOkBtn').textContent = t('modalYes');
+  document.getElementById('confirmCancelBtn').textContent = t('modalNo');
 
   localStorage.setItem(LANG_KEY, LANG);
 
@@ -472,12 +560,12 @@ function renderQuestion(){
   LIKERT.forEach(opt=>{
     const id = `opt_${opt.v}`;
     const label = document.createElement('label');
-    label.innerHTML = `<input type="radio" name="likert" value="${opt.v}" id="${id}"> ${opt.l[LANG]}`;
-    if(answers[current] === opt.v) label.classList.add('selected');
+    label.className = 'mood-chip' + (answers[current] === opt.v ? ' selected' : '');
+    label.innerHTML = `<input type="radio" class="sr-radio" name="likert" value="${opt.v}" id="${id}"><span class="emoji">${LIKERT_EMOJI[opt.v]}</span><span>${opt.l[LANG]}</span>`;
     label.onclick = ()=>{
       answers[current] = opt.v;
       document.getElementById('nextBtn').disabled = false;
-      document.querySelectorAll('.likert label').forEach(l=>l.classList.remove('selected'));
+      document.querySelectorAll('.mood-chip').forEach(l=>l.classList.remove('selected'));
       label.classList.add('selected');
     };
     wrap.appendChild(label);
@@ -532,8 +620,12 @@ function showResults(skipSave){
   document.getElementById('results').classList.remove('hidden');
   const {domainScores, overall} = computeScores();
 
-  document.getElementById('overallScore').textContent = overall.toFixed(2);
   document.getElementById('overallScore').style.color = scoreColor(overall);
+  if(skipSave){
+    document.getElementById('overallScore').textContent = overall.toFixed(2);
+  } else {
+    animateScoreCountUp(overall);
+  }
 
   const badgeEl = document.getElementById('overallBadge');
   let badgeClass, badgeText;
@@ -564,6 +656,7 @@ function showResults(skipSave){
 
   if(!skipSave){
     saveToHistory(domainScores, overall);
+    launchConfetti();
   }
   renderHistory();
 }
@@ -601,7 +694,7 @@ function renderDevPlan(domainScores){
         </div>
         <div class="devplan-action">${RECS[d][LANG]}</div>
         <div class="devplan-links">
-          <div class="small" style="font-weight:600;">${t('readMoreLabel')}</div>
+          <div class="small" style="font-weight:700;">${t('readMoreLabel')}</div>
           ${links}
         </div>
       </div>`;
@@ -613,13 +706,13 @@ function renderDevPlan(domainScores){
 function saveReflection(){
   const steelman = document.getElementById('steelman').value.trim();
   const disconfirm = document.getElementById('disconfirm').value.trim();
-  if(!steelman && !disconfirm){ alert(t('saveReflectionEmpty')); return; }
+  if(!steelman && !disconfirm){ toast(t('saveReflectionEmpty')); return; }
   const hist = getHistory();
   if(hist.length>0){
     hist[hist.length-1].reflection = {steelman, disconfirm};
     setHistory(hist);
   }
-  alert(t('saveReflectionDone'));
+  toast(t('saveReflectionDone'));
 }
 
 // ---------- History (localStorage) ----------
@@ -664,12 +757,13 @@ function renderHistoryPreview(){
   el.innerHTML = `<p class="small">${t('historyPreview')(d.toLocaleDateString(localeForLang()), last.overall, hist.length)}</p>`;
 }
 
-function clearHistory(){
-  if(confirm(t('clearConfirm'))){
+async function clearHistory(){
+  const ok = await showConfirm(t('clearConfirm'));
+  if(ok){
     localStorage.removeItem(STORAGE_KEY);
     renderHistory();
     renderHistoryPreview();
-    alert(t('clearDone'));
+    toast(t('clearDone'));
   }
 }
 
@@ -690,10 +784,109 @@ function exportResult(){
   });
   text += `\n${t('exportFooter')}`;
   navigator.clipboard.writeText(text).then(()=>{
-    alert(t('exportCopied'));
+    toast(t('exportCopied'));
   }).catch(()=>{
     prompt(t('exportPromptLabel'), text);
   });
+}
+
+// ---------- Gen-Z UI helpers: toast, confirm modal, confetti, count-up ----------
+let toastTimer;
+function toast(msg){
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.classList.remove('hidden');
+  requestAnimationFrame(()=> el.classList.add('show'));
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=>{
+    el.classList.remove('show');
+    setTimeout(()=> el.classList.add('hidden'), 300);
+  }, 2400);
+}
+
+function showConfirm(message){
+  return new Promise(resolve=>{
+    const overlay = document.getElementById('confirmModal');
+    document.getElementById('confirmModalText').textContent = message;
+    overlay.classList.remove('hidden');
+    const okBtn = document.getElementById('confirmOkBtn');
+    const cancelBtn = document.getElementById('confirmCancelBtn');
+    function cleanup(result){
+      overlay.classList.add('hidden');
+      okBtn.removeEventListener('click', onOk);
+      cancelBtn.removeEventListener('click', onCancel);
+      resolve(result);
+    }
+    function onOk(){ cleanup(true); }
+    function onCancel(){ cleanup(false); }
+    okBtn.addEventListener('click', onOk);
+    cancelBtn.addEventListener('click', onCancel);
+  });
+}
+
+function prefersReducedMotion(){
+  return window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+}
+
+function animateScoreCountUp(target){
+  const el = document.getElementById('overallScore');
+  if(prefersReducedMotion()){
+    el.textContent = target.toFixed(2);
+    return;
+  }
+  const duration = 650;
+  const start = performance.now();
+  function step(now){
+    const p = Math.min(1, (now-start)/duration);
+    const eased = 1 - Math.pow(1-p, 3);
+    el.textContent = (target*eased).toFixed(2);
+    if(p<1) requestAnimationFrame(step);
+    else el.textContent = target.toFixed(2);
+  }
+  requestAnimationFrame(step);
+}
+
+function launchConfetti(){
+  if(prefersReducedMotion()) return;
+  const canvas = document.getElementById('confettiCanvas');
+  if(!canvas) return;
+  canvas.classList.remove('hidden');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors = ['#D4FF3D','#FF3D80','#3DFFC1','#FFD23D'];
+  const pieces = Array.from({length:70}, ()=>({
+    x: Math.random()*canvas.width,
+    y: -20 - Math.random()*canvas.height*0.3,
+    r: 4+Math.random()*5,
+    c: colors[Math.floor(Math.random()*colors.length)],
+    vy: 2+Math.random()*3,
+    vx: -1.5+Math.random()*3,
+    rot: Math.random()*360,
+    vr: -6+Math.random()*12
+  }));
+  let frame = 0;
+  const maxFrames = 100;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy; p.rot+=p.vr;
+      ctx.save();
+      ctx.translate(p.x,p.y);
+      ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle = p.c;
+      ctx.fillRect(-p.r/2,-p.r/2,p.r,p.r*0.6);
+      ctx.restore();
+    });
+    frame++;
+    if(frame<maxFrames){
+      requestAnimationFrame(draw);
+    } else {
+      ctx.clearRect(0,0,canvas.width,canvas.height);
+      canvas.classList.add('hidden');
+    }
+  }
+  draw();
 }
 
 // init
