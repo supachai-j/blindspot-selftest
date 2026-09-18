@@ -122,9 +122,11 @@
   .hidden{display:none !important;}
   .small{font-size:0.85rem;color:var(--muted);font-family:'Noto Sans Thai',sans-serif;}
   .disclaimer{
-    background:var(--disclaimer-bg);border:2px solid var(--line);border-radius:16px;padding:14px 16px;
-    font-size:0.83rem;color:var(--disclaimer-text);margin-bottom:18px;font-family:'Noto Sans Thai',sans-serif;
+    background:var(--disclaimer-bg);border:2px solid var(--line);border-radius:16px;padding:10px 16px;
+    font-size:0.82rem;color:var(--disclaimer-text);margin-bottom:18px;font-family:'Noto Sans Thai',sans-serif;
+    line-height:1.5;
   }
+  .disclaimer a{color:inherit;font-weight:700;}
   .devplan-title{font-size:1.1rem;font-weight:800;margin-bottom:12px;}
   .devplan-card{background:var(--surface2);border:2px solid var(--line);border-radius:16px;padding:14px 16px;margin-bottom:12px;box-shadow:3px 3px 0 var(--shadow-color);}
   .devplan-card.priority{border-color:var(--pink);box-shadow:4px 4px 0 var(--pink);}
@@ -336,7 +338,7 @@ const STR = {
     hTitle: "🧠 คนตาบอดทางความคิด",
     hSubtitle: "Cognitive Blind Spot Self-Test — เครื่องมือสะท้อนตัวเอง (self-reflection)",
     eyebrowTag: "🧪 เช็คตัวเอง",
-    disclaimer: "⚠️ เครื่องมือนี้เป็น <b>self-reflection tool เพื่อการศึกษา</b> ได้แรงบันดาลใจจากงานวิจัยด้าน cognitive psychology (Actively Open-Minded Thinking, Identity-Protective Cognition, Bias Blind Spot) แต่<b>ไม่ใช่แบบทดสอบจิตวิทยาที่ผ่านการ validate ทางสถิติ</b> ผลลัพธ์ไม่ควรใช้วินิจฉัยหรือตัดสินใครแบบเบ็ดเสร็จ — ใช้เพื่อกระตุ้นการสะท้อนตัวเองเท่านั้น",
+    disclaimer: `⚠️ Self-reflection tool เพื่อการศึกษา ไม่ใช่แบบทดสอบจิตวิทยาที่ validate — <a href="javascript:void(0)" onclick="openAbout()" style="color:inherit;text-decoration:underline;">อ่านรายละเอียด</a>`,
     introP1: "แบบทดสอบนี้มี <b>20 ข้อ</b> (ใช้เวลา ~5 นาที) แบ่งเป็น 5 มิติ:",
     introList: [
       "<b>CB</b> — Confirmation Bias (เลือกรับเฉพาะข้อมูลที่ยืนยันความเชื่อเดิม)",
@@ -434,7 +436,7 @@ const STR = {
     hTitle: "🧠 Cognitive Blind Spot",
     hSubtitle: "Cognitive Blind Spot Self-Test — a self-reflection tool",
     eyebrowTag: "🧪 SELF-CHECK",
-    disclaimer: "⚠️ This is a <b>self-reflection tool for educational purposes</b>, inspired by cognitive psychology research (Actively Open-Minded Thinking, Identity-Protective Cognition, Bias Blind Spot) — <b>not a statistically validated psychometric instrument</b>. Results should not be used to diagnose or make final judgments about anyone. Use it to prompt self-reflection only.",
+    disclaimer: `⚠️ Educational self-reflection tool, not a validated psychometric instrument — <a href="javascript:void(0)" onclick="openAbout()" style="color:inherit;text-decoration:underline;">read more</a>`,
     introP1: "This test has <b>20 items</b> (~5 minutes), covering 5 dimensions:",
     introList: [
       "<b>CB</b> — Confirmation Bias (selectively seeking info that confirms existing beliefs)",
